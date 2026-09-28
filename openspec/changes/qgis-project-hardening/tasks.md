@@ -84,8 +84,29 @@
 
 ## 8. Final verification
 
-- [ ] 8.1 Run `verify_data.py` across all four subcommands and confirm every check passes
-- [ ] 8.2 Confirm no documented path remains unresolved
-- [ ] 8.3 Confirm no dataset present in the data directory is undocumented
-- [ ] 8.4 Reopen the project and confirm the expected layer count, group configuration, presets and 3D scene
-- [ ] 8.5 Record the final measured crop-extent values, trail counts and raster overview configuration in the task log
+- [x] 8.1 Run `verify_data.py` across all four subcommands and confirm every check passes
+- [x] 8.2 Confirm no documented path remains unresolved
+- [x] 8.3 Confirm no dataset present in the data directory is undocumented
+- [x] 8.4 Reopen the project and confirm the expected layer count, group configuration, presets and 3D scene
+- [x] 8.5 Record the final measured crop-extent values, trail counts and raster overview configuration in the task log
+
+### Final verification record — 2026-09-28
+
+- `python3 scripts/verify_data.py all`: crop extent 7/7, documentation 2/2,
+  raster performance 8/8 and trails 20/20 checks passed.
+- Crop envelope: 49,372.55 m × 18,479.41 m, 912.3755 km², north-up in
+  `EPSG:32734`; every boundary vertex is contained (maximum excursion 0 mm).
+- Trails: 172 named dissolved trails, 144 single-part, 28 multi-part, total
+  named length 184,735.6 m; supplements contain 1,680 unnamed trails and 309
+  tracks. The Atlas has 172 pages; two 24-DPI headless exports rendered to 172
+  pixel-identical page pairs.
+- Overviews: `aerial_1m.tif` has 2–64 average levels; `aerial_5m.tif` and both
+  contour DEMs have 2–32 average levels. All four source checksums, dimensions
+  and geotransforms match their baseline records.
+- Fresh QGIS reopen: 186 layers, 172 direct `Hiking Trails` children with
+  mutex enabled, presets `Trail Inspection`, `Aerial Imagery` and
+  `Single-part trails`, and the `Named Trail Atlas` coverage count of 172.
+  QGIS 4.2.2 crashes when its MCP helper opens or captures a 3D OpenGL window;
+  the saved 3D XML was therefore verified directly for terrain, camera,
+  materials, lighting, bloom, colour grading and MSAA without a final canvas
+  save.
