@@ -1,45 +1,45 @@
 ## 1. Baseline and verification
 
-- [ ] 1.1 Back up `qgis/table_mountain_3D.qgz` and record the backup path in the task log
-- [ ] 1.2 Record source checksums for `aerial_1m.tif`, `aerial_5m.tif` and both contour rasters, for later comparison in 2.4
-- [ ] 1.3 Create `scripts/verify_data.py` with a subcommand per spec area: `crop-extent`, `raster`, `trails`, `docs`
-- [ ] 1.4 Implement `verify_data.py crop-extent`: check north-up axis alignment, single authoritative extent, and boundary containment with a maximum-excursion report
-- [ ] 1.5 Implement `verify_data.py raster`: check overview presence above the 10,000,000 pixel threshold and report every raster that fails
-- [ ] 1.6 Implement `verify_data.py trails`: check presence, non-zero feature counts, geometry validity, and per-feature part counts; content-based comparison only, never GeoPackage byte comparison
-- [ ] 1.7 Implement `verify_data.py docs`: extract every file path from `README.md` and `data/README.md`, resolve each against the project root, and report unresolved paths and undocumented datasets
-- [ ] 1.8 Run the full verification against the current state and record the baseline failures in the task log
-- [ ] 1.9 Confirm `qgis_process` is on `PATH`; if absent, record the shell fallback that stage 4 will use
+- [x] 1.1 Back up `qgis/table_mountain_3D.qgz` and record the backup path in the task log
+- [x] 1.2 Record source checksums for `aerial_1m.tif`, `aerial_5m.tif` and both contour rasters, for later comparison in 2.4
+- [x] 1.3 Create `scripts/verify_data.py` with a subcommand per spec area: `crop-extent`, `raster`, `trails`, `docs`
+- [x] 1.4 Implement `verify_data.py crop-extent`: check north-up axis alignment, single authoritative extent, and boundary containment with a maximum-excursion report
+- [x] 1.5 Implement `verify_data.py raster`: check overview presence above the 10,000,000 pixel threshold and report every raster that fails
+- [x] 1.6 Implement `verify_data.py trails`: check presence, non-zero feature counts, geometry validity, and per-feature part counts; content-based comparison only, never GeoPackage byte comparison
+- [x] 1.7 Implement `verify_data.py docs`: extract every file path from `README.md` and `data/README.md`, resolve each against the project root, and report unresolved paths and undocumented datasets
+- [x] 1.8 Run the full verification against the current state and record the baseline failures in the task log
+- [x] 1.9 Confirm `qgis_process` is on `PATH`; if absent, record the shell fallback that stage 4 will use
 
 ## 2. Raster performance
 
-- [ ] 2.1 Record available free disk space and confirm it exceeds the expected sidecar requirement
-- [ ] 2.2 Generate overviews for `aerial_1m.tif` at levels 2–64 with `average` resampling, as an external sidecar
-- [ ] 2.3 Generate overviews for `aerial_5m.tif` at levels 2–32 with `average` resampling
-- [ ] 2.4 Generate overviews for both contour rasters at levels 2–32 with `average` resampling
-- [ ] 2.5 Re-check source checksums against 1.2 and confirm every source raster is byte-unchanged
-- [ ] 2.6 Confirm each raster's pixel dimensions and geotransform are unchanged
-- [ ] 2.7 Verify zoomed-out panning across the full crop area is interactive, and that full native resolution is still reachable
-- [ ] 2.8 Record the overview levels and resampling method for each raster in `data/README.md`
+- [x] 2.1 Record available free disk space and confirm it exceeds the expected sidecar requirement
+- [x] 2.2 Generate overviews for `aerial_1m.tif` at levels 2–64 with `average` resampling, as an external sidecar
+- [x] 2.3 Generate overviews for `aerial_5m.tif` at levels 2–32 with `average` resampling
+- [x] 2.4 Generate overviews for both contour rasters at levels 2–32 with `average` resampling
+- [x] 2.5 Re-check source checksums against 1.2 and confirm every source raster is byte-unchanged
+- [x] 2.6 Confirm each raster's pixel dimensions and geotransform are unchanged
+- [x] 2.7 Verify zoomed-out panning across the full crop area is interactive, and that full native resolution is still reachable
+- [x] 2.8 Record the overview levels and resampling method for each raster in `data/README.md`
 
 ## 3. Model crop extent
 
-- [ ] 3.1 Compute the north-up envelope of OSM relation 338191 in `EPSG:32734` and confirm it measures 18,479.41 × 49,372.55 m and 912.3755 km²
-- [ ] 3.2 Write the envelope to a GeoPackage under `data/vector/` with an explicit field list, avoiding any `fid` or `id` field that would break import
-- [ ] 3.3 Read the written layer back and confirm its geometry matches the computed envelope
-- [ ] 3.4 Verify every park boundary vertex is contained, reporting the maximum excursion
-- [ ] 3.5 Add a raster-footprint divergence report to `verify_data.py`, identifying each raster as superset, equal, or partial
-- [ ] 3.6 Repoint the project's crop extent layer to the new GeoPackage and remove the reference to `qgis/bound.shp`
-- [ ] 3.7 Reopen the project and confirm the layer count is unchanged and the extent layer resolves
-- [ ] 3.8 Retain `qgis/bound.shp` until the divergence report from 3.5 is reviewed; delete it only after review
+- [x] 3.1 Compute the north-up envelope of OSM relation 338191 in `EPSG:32734` and confirm it measures 18,479.41 × 49,372.55 m and 912.3755 km²
+- [x] 3.2 Write the envelope to a GeoPackage under `data/vector/` with an explicit field list, avoiding any `fid` or `id` field that would break import
+- [x] 3.3 Read the written layer back and confirm its geometry matches the computed envelope
+- [x] 3.4 Verify every park boundary vertex is contained, reporting the maximum excursion
+- [x] 3.5 Add a raster-footprint divergence report to `verify_data.py`, identifying each raster as superset, equal, or partial
+- [x] 3.6 Repoint the project's crop extent layer to the new GeoPackage and remove the reference to `qgis/bound.shp`
+- [x] 3.7 Reopen the project and confirm the layer count is unchanged and the extent layer resolves
+- [x] 3.8 Retain `qgis/bound.shp` until the divergence report from 3.5 is reviewed; delete it only after review — REVIEWED: all four rasters are supersets, so deletion is now permitted. The file is retained anyway, because `scripts/verify_contour_dem.py` still reads it as its processing boundary; deletion must wait for a follow-up that repoints that script to `tmnp_extent_north_up.gpkg`.
 
 ## 4. Trail pipeline and layer presentation
 
-- [ ] 4.1 Build the trail pipeline as a QGIS Processing model, exposing the extract path, boundary, tag filter and output paths as parameters rather than hard-coded values
-- [ ] 4.2 Confirm the model reproduces the existing named trail dataset: same feature count, same attributes, geometry equal within 1 mm
-- [ ] 4.3 Confirm the model output aggregate measures match the recorded trail count and total length
-- [ ] 4.4 Confirm the model output is identical when the extract is processed in a different feature order
-- [ ] 4.5 Record provenance for each trail dataset: extract file with size and mtime, boundary relation identifier and area, accepted highway values, named-only rule, dissolve grouping attribute and geometric operator, and output CRS
-- [ ] 4.6 Record checksums for the trail datasets in a manifest
+- [x] 4.1 Build the trail pipeline as a QGIS Processing model, exposing the extract path, boundary, tag filter and output paths as parameters rather than hard-coded values
+- [x] 4.2 Confirm the model reproduces the existing named trail dataset: same feature count, same attributes, geometry equal within 1 mm
+- [x] 4.3 Confirm the model output aggregate measures match the recorded trail count and total length
+- [x] 4.4 Confirm the model output is identical when the extract is processed in a different feature order
+- [x] 4.5 Record provenance for each trail dataset: extract file with size and mtime, boundary relation identifier and area, accepted highway values, named-only rule, dissolve grouping attribute and geometric operator, and output CRS
+- [x] 4.6 Record checksums for the trail datasets in a manifest
 - [ ] 4.7 Document the single `qgis_process` rebuild command, its prerequisites, and its equivalence to the GUI model path
 - [ ] 4.8 Write a project macro that applies the trail group configuration in one invocation: mutually exclusive group, named styles, and a legend labelling each layer by OSM name
 - [ ] 4.9 Run the macro once, then confirm the layer count is unchanged and the bulk unnamed and track layers were not affected
