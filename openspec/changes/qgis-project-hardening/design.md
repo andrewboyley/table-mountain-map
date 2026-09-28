@@ -181,6 +181,27 @@ reopened to confirm the terrain, pose, lights, materials, 3D renderers and
 MSAA. The MCP 3D screenshot helper crashes this QGIS build, so it is not used
 as scene evidence.
 
+### 9. The named-trail Atlas is coverage-driven and makes disconnections explicit
+
+The saved `Named Trail Atlas` layout uses the 172-feature `All named trails
+(3D)` layer as coverage, not a hand-maintained list. Its explicit ascending
+sort key is `concat("name", '|', "osm_ids")`: OSM names are not guaranteed to
+be unique, so the numeric source identifiers make order and internal page names
+unique without changing the visible title, which remains the feature's OSM
+`name`.
+
+The atlas map has automatic feature scaling with a 15% margin. A dynamic
+notice labels every multi-part page with its part count and the statement that
+the frame includes every part but is **not** a continuous camera run. This
+prevents a disconnected geometry being presented as one traversable line.
+
+Two independent `qgis_process native:atlaslayouttopdf` runs at 24 DPI each
+produced 172 pages. Their PDF metadata differs, but all 172 corresponding
+rendered PNG pages are pixel-identical, which proves identical order and
+framing. Punctuation was exercised by `580m Devil's Peak Traverse`; no
+coverage feature contains non-ASCII characters, and the saved dynamic title
+uses the Unicode-capable Noto Sans font.
+
 ## Risks / Trade-offs
 
 **Overviews on a 3.8 GB raster is long-running and disk-hungry** → Start it

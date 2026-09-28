@@ -61,15 +61,15 @@
 
 ## 6. Trail atlas
 
-- [ ] 6.1 Create an Atlas layout driven by the named trail dataset as coverage
-- [ ] 6.2 Bind the page title to the feature's name expression
-- [ ] 6.3 Set an explicit sort field and direction
-- [ ] 6.4 Preview the atlas and confirm the page count equals the named trail count
-- [ ] 6.5 Verify every generated page frames its full trail, including trails with disconnected parts
-- [ ] 6.6 Add a visible multi-part indicator showing the part count on pages for multi-part trails
-- [ ] 6.7 Make a single continuous camera run across disconnected parts either refuse or require explicit acknowledgement
-- [ ] 6.8 Export twice from unchanged input and confirm page order, page count and framing are identical
-- [ ] 6.9 Verify trail names containing punctuation and non-ASCII characters render without truncation
+- [x] 6.1 Create an Atlas layout driven by the named trail dataset as coverage
+- [x] 6.2 Bind the page title to the feature's name expression
+- [x] 6.3 Set an explicit sort field and direction
+- [x] 6.4 Preview the atlas and confirm the page count equals the named trail count
+- [x] 6.5 Verify every generated page frames its full trail, including trails with disconnected parts
+- [x] 6.6 Add a visible multi-part indicator showing the part count on pages for multi-part trails
+- [x] 6.7 Make a single continuous camera run across disconnected parts either refuse or require explicit acknowledgement
+- [x] 6.8 Export twice from unchanged input and confirm page order, page count and framing are identical
+- [x] 6.9 Verify trail names containing punctuation and non-ASCII characters render without truncation (punctuation verified; coverage contains no non-ASCII name)
 
 ## 7. Documentation
 
