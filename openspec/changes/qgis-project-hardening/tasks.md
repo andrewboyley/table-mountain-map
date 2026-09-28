@@ -50,14 +50,14 @@
 
 ## 5. Terrain and 3D scene
 
-- [ ] 5.1 Configure the 3D view terrain from the project DEM and record the elevation source layer and band
-- [ ] 5.2 Set terrain tiling parameters in metres and confirm terrain detail refines when the view approaches the ground
-- [ ] 5.3 Set a camera pose as explicit map coordinates and heading
-- [ ] 5.4 Configure surface materials with independent base colour, metalness and roughness, and bind an image texture to the base colour
-- [ ] 5.5 Select an environment lighting source
-- [ ] 5.6 Enable colour grading, bloom and anti-aliasing
-- [ ] 5.7 Configure categorised 3D symbols where a 3D symbol layer is rendered
-- [ ] 5.8 Save the project, reopen it, and confirm the terrain source, camera pose, materials, lighting and post-processing are all restored
+- [x] 5.1 Configure the 3D view terrain from the project DEM and record the elevation source layer and band
+- [x] 5.2 Set terrain tiling parameters in metres and confirm terrain detail refines when the view approaches the ground
+- [x] 5.3 Set a camera pose as explicit map coordinates and heading
+- [x] 5.4 Configure surface materials with independent base colour, metalness and roughness, and bind an image texture to the base colour
+- [x] 5.5 Select an environment lighting source
+- [x] 5.6 Enable colour grading, bloom and anti-aliasing
+- [x] 5.7 Configure categorised 3D symbols where a 3D symbol layer is rendered
+- [x] 5.8 Save the project, reopen it, and confirm the terrain source, camera pose, materials, lighting and post-processing are all restored
 
 ## 6. Trail atlas
 

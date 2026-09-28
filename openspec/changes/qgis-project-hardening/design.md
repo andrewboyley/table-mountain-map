@@ -158,6 +158,29 @@ a `last_change` timestamp into `gpkg_contents` on every save, so bytes always
 differ even when data is identical. The README already documents this
 reasoning; the requirement now has an executable check behind it.
 
+### 8. The saved 3D scene uses the contour DEM and a local-coordinate camera
+
+The `Point of View` scene is saved in `qgis/table_mountain_3D.qgz`. Its terrain
+source is `table_mountain_contours_2m_interpolated_5m_within_bound`, band 1,
+with a 100 m tile resolution, 5 m maximum ground error and 3 px maximum screen
+error in `EPSG:32734`. The all-trails overview is a 3D-only, unchecked layer
+categorised by `n_parts`; the north-up extent is a textured 3D-only overlay.
+
+`QgsCameraPose` stores coordinates relative to the saved 3D origin. The
+persisted origin is the crop-extent centre at 190 m elevation, and the camera
+target is therefore stored as map coordinates `262848.06182320754,
+6221403.2117594285, 90` with heading 38°, pitch 58° and distance 7,800 m.
+This avoids the QGIS 4.2.2 canvas-save behaviour that double-offsets an
+absolute pose.
+
+QGIS 4.2.2 exposes MSAA through Python but does not bind the colour-grading,
+bloom, or skybox settings classes. The saved scene consequently configures
+MSAA through the API and persists bloom plus colour grading in the project's
+native `<qgis3d>` XML (`bloom enabled="1"`, exposure `0.15`). The project was
+reopened to confirm the terrain, pose, lights, materials, 3D renderers and
+MSAA. The MCP 3D screenshot helper crashes this QGIS build, so it is not used
+as scene evidence.
+
 ## Risks / Trade-offs
 
 **Overviews on a 3.8 GB raster is long-running and disk-hungry** → Start it
