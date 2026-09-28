@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "qgis": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "https://github.com/nkarasiak/qgis-mcp/archive/refs/heads/main.zip",
+        "qgis-mcp-server"
+      ],
+      "env": {}
+    },
+    "blender": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-for-blender==2.1.0",
+        "--port",
+        "9877"
+      ],
+      "env": {}
+    }
+  }
+}
