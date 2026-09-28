@@ -45,12 +45,15 @@ project ever becomes commercial, written permission from CCT is required.
 
 ### 3D texture derivative
 
-`aerial_texture_3d.tif` is a local, ignored 15 m texture generated from the 5 m
-raster over `../vector/osm/tmnp_extent_north_up.gpkg`. The saved 3D extent
-overlay uses this small derivative rather than loading the 1 m source as a GPU
-texture. Regenerate it with GDAL Warp using that GeoPackage envelope as the
-output bounds, `EPSG:32734`, cubic resampling, and JPEG-compressed tiled
-GeoTIFF output.
+`aerial_10m_terrain.tif` is a local, ignored 10 m terrain texture derived from
+`aerial_5m.tif` with average resampling. The saved 3D terrain uses the dedicated
+`3D terrain texture` map theme, which exposes only this raster; it never draws
+the 1 m aerial or a WMS layer into terrain tiles. Terrain elevation remains the
+5 m contour DEM. QGIS generates 512 px texture tiles from the 10 m raster.
+
+`aerial_texture_3d.tif` is a separate small texture retained for the north-up
+extent overlay. Regenerate either derivative from `aerial_5m.tif` in
+`EPSG:32734` using a tiled compressed GeoTIFF and the appropriate model extent.
 
 Notes:
 
