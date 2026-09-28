@@ -53,6 +53,34 @@ The exception, and it is deliberate: `blender/*.blend` **is** tracked while
 reproducible from this repository. If a scene build script is added, the
 ignore rule should be added at that point.
 
+## Local hooks
+
+Install [pre-commit](https://pre-commit.com/), then install this repository's
+commit and push hooks:
+
+```bash
+python3 -m pip install --user pre-commit
+pre-commit install
+```
+
+The commit hook checks structured files, merge-conflict markers, line endings,
+end-of-file newlines, and trailing whitespace. The push hook runs the complete
+project verifier:
+
+```bash
+python3 scripts/verify_data.py all
+```
+
+It uses the GDAL-enabled `/usr/bin/python3` supplied by the QGIS installation
+and needs the local geospatial inputs documented in `data/README.md`, so it is
+intentionally a pre-push hook rather than a requirement for every commit. Run
+the complete configured set manually with:
+
+```bash
+pre-commit run --all-files
+pre-commit run --hook-stage pre-push --all-files
+```
+
 ## Changes
 
 Work is planned as OpenSpec changes under `openspec/changes/`. A change is
