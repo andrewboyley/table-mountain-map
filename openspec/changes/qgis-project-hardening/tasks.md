@@ -40,13 +40,13 @@
 - [x] 4.4 Confirm the model output is identical when the extract is processed in a different feature order
 - [x] 4.5 Record provenance for each trail dataset: extract file with size and mtime, boundary relation identifier and area, accepted highway values, named-only rule, dissolve grouping attribute and geometric operator, and output CRS
 - [x] 4.6 Record checksums for the trail datasets in a manifest
-- [ ] 4.7 Document the single `qgis_process` rebuild command, its prerequisites, and its equivalence to the GUI model path
-- [ ] 4.8 Write a project macro that applies the trail group configuration in one invocation: mutually exclusive group, named styles, and a legend labelling each layer by OSM name
-- [ ] 4.9 Run the macro once, then confirm the layer count is unchanged and the bulk unnamed and track layers were not affected
-- [ ] 4.10 Verify isolating a single named trail leaves all other layers' visibility unchanged
-- [ ] 4.11 Verify no two named trail layers share a display label, and surface any OSM name collision rather than merging it
-- [ ] 4.12 Create visibility presets for the trail-inspection and aerial-imagery configurations, and verify each restores its exact recorded state
-- [ ] 4.13 Verify the part-count filter shows exactly the recorded number of single-part trails, and that multi-part trails remain reachable
+- [x] 4.7 Document the single `qgis_process` rebuild command, its prerequisites, and its equivalence to the GUI model path
+- [x] 4.8 Write a project macro that applies the trail group configuration in one invocation: mutually exclusive group, named styles, and a legend labelling each layer by OSM name
+- [x] 4.9 Run the macro once, then confirm the layer count is unchanged and the bulk unnamed and track layers were not affected
+- [x] 4.10 Verify isolating a single named trail leaves all other layers' visibility unchanged
+- [x] 4.11 Verify no two named trail layers share a display label, and surface any OSM name collision rather than merging it
+- [x] 4.12 Create visibility presets for the trail-inspection and aerial-imagery configurations, and verify each restores its exact recorded state
+- [x] 4.13 Verify the part-count filter shows exactly the recorded number of single-part trails, and that multi-part trails remain reachable
 
 ## 5. Terrain and 3D scene
 
