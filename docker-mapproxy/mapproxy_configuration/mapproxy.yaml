@@ -60,6 +60,11 @@ sources:
     req:
       url: https://cityimg.capetown.gov.za/erdas-iws/ogc/wms/GeoSpatial%20Datasets
       layers: Aerial Imagery_Aerial Imagery 2026Jan
+      # The upstream CoCT WMS now requires an explicit styles parameter;
+      # omitting it returns a "Missing parameter value styles" exception
+      # and MapProxy proxies a blank tile. An empty styles value selects
+      # the server default.
+      styles: ''
       transparent: false
     supported_formats: [image/jpeg]
     supported_srs: ['EPSG:3857', 'EPSG:32734']
