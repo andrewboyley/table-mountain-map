@@ -1,0 +1,39 @@
+volumes:
+   mapproxy_cache_data:
+services:
+  mapproxy:
+    image: kartoza/mapproxy
+    environment:
+      - PRODUCTION=true
+      - PROCESSES=4
+      - CHEAPER=2
+      - THREADS=10
+      - MAPPROXY_USER_ID=1000
+      - MAPPROXY_GROUP_ID=1000
+      - MULTI_MAPPROXY=true
+      - ALLOW_LISTING=True
+      - LOGGING=true
+    volumes:
+      # If MULTI_MAPPROXY=true then mount to /multi_mapproxy otherwise mount to /mapproxy
+      - ./mapproxy_configuration:/multi_mapproxy
+      - mapproxy_cache_data:/cache_data
+      # Read-only project data used to constrain MapProxy seed jobs.
+      - ../data:/seed_data:ro
+  nginx:
+    image: nginx
+    environment:
+      - NGINX_HOST=mapproxy
+      - MULTI_MAPPROXY=true
+    volumes:
+      - ./web:/web
+      - ./sites-enabled:/etc/nginx/conf.d:ro
+      - ./web/nginx_conf.sh:/docker-entrypoint.d/nginx_conf.sh
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
+    depends_on:
+      - mapproxy
+    ports:
+    - "80:80"
