@@ -8,42 +8,31 @@ This project prepares City of Cape Town elevation data, OpenStreetMap context, a
 qgis/                 QGIS project files
 data/
   osm/                OSM PBF files and extracts
-  terrain/            DEM, DTM, contour, and height-map data
+  elevation/          DEM, DTM, contour, and height-map data
   vector/             COCT and OSM vector context
   imagery/            permitted imagery and textures
 docs/                 research findings and attribution notes
 scripts/
-  duckdb/             DuckDB and OSM extraction scripts
-  blender/            Blender build and render scripts
+                    data-verification and terrain-processing scripts
 cache/                temporary processing files
 renders/              final images and animation output
 ```
 
 `opencode.json` stays in the project root so OpenCode can discover it. The Python environment is kept in the root `.venv` directory.
 
-## Rebuilding from a fresh clone
+## Restoring local data after a fresh clone
 
-A clone is about 1.3 MB. The large source and derived binaries are excluded by `.gitignore` and are rebuilt by a bootstrap script:
+The repository intentionally excludes large source and derived binaries. Restore
+them from the sources recorded in the `data/` READMEs, then verify the restored
+state from the repository root:
 
 ```bash
-git clone <repo> table-mountain-pov
-cd table-mountain-pov
-scripts/bootstrap.sh
+python3 scripts/verify_data.py
 ```
 
-The script is idempotent, so re-running it only does missing work. Steps:
-
-| Step | What it does | Network |
-|---|---|---|
-| `tools` | creates `.venv` from `scripts/duckdb/requirements.txt` | yes (PyPI) |
-| `osmium` | fetches the Geofabrik South Africa PBF, then clips it to the park extent | yes (~420 MB) |
-| `gpkg` | `ogr2ogr` builds the five-layer `EPSG:32734` GeoPackage | no |
-| `contours` | extracts the COCT 2 m contour archive | **manual, see below** |
-| `park` | exports TMNP boundary (OSM relation 338191) from the GeoPackage | no |
-| `bbox` | builds the minimum bounding rectangle around that boundary | no |
-| `official` | prints how to fetch the DEFF/SAPAD reference boundary | no |
-
-Run a single step with `--step NAME`, or check integrity without fetching anything with `--verify`.
+The verified trail outputs can be rebuilt with the single QGIS Processing-model
+command in `data/README.md`; terrain-source research and access limits are in
+`docs/terrain_data_findings.md`.
 
 ### System requirements
 
@@ -56,7 +45,7 @@ sudo apt install gdal-bin osmium-tool
 conda install -c conda-forge gdal osmium
 ```
 
-### The one manual step
+### The one manual data source
 
 The COCT 2 m contour archive is 753 MB and is not in git. Obtain it from the
 [City of Cape Town Open Data Portal](https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::city-of-cape-town-ground-level-map-2m-contours-cct-glm-2019)
@@ -82,51 +71,28 @@ The clip PBF rebuilds **byte-identically**. The GeoPackage does not, and cannot:
 ## Current data
 
 - `data/osm/south-africa-latest.osm.pbf` — Geofabrik South Africa extract, timestamped 2026-09-24, with OSM attribution required.
-- `data/osm/table-mountain-national-park.osm.pbf` — rectangular Table Mountain National Park extent clip.
-- `data/vector/table-mountain-national-park.gpkg` — GDAL/ogr2ogr OSM layers from the clipped PBF, in `EPSG:32734`.
+- `data/osm/table-mountain-bound-extent.osm.pbf` — rectangular Table Mountain National Park extent clip used by the trail model.
 - `data/vector/osm/tmnp_relation_338191.gpkg` — Table Mountain National Park boundary, OSM relation 338191, 249.91 km², `EPSG:32734`.
-- `data/vector/osm/tmnp_minimum_bounding_rectangle.gpkg` — smallest (minimum-area) rotated rectangle enclosing that boundary, 766.26 km², `EPSG:32734`.
-- `data/vector/coct/protected_areas/` — DEFF/SAPAD official park boundary, for comparison only.
+- `data/vector/osm/tmnp_extent_north_up.gpkg` — authoritative north-up model crop envelope derived from relation 338191, `EPSG:32734`.
+- `data/vector/osm/tm_hiking_trails_dissolved.gpkg`, `data/vector/osm/tm_hiking_trails_named.gpkg` and `data/vector/osm/tm_trail_supplement.gpkg` — reproducible named-trail and bulk trail outputs; provenance is in `data/vector/osm/trail_datasets.manifest.json`.
 - `qgis/table_mountain_3D.qgz` — QGIS project.
 - `docs/terrain_data_findings.md` — elevation-source research and access limits.
 - `docs/osm_pbf_inspection.md` — DuckDB inspection results and Table Mountain feature IDs.
 
-## Model crop rectangle
+## Model crop extent
 
-`TMNP minimum bounding rectangle` is the QGIS layer to crop raster and vector
-data against. It is the minimum-area rotated rectangle that contains the whole
-park boundary, computed by `native:orientedminimumboundingbox`.
+`TMNP crop extent (north-up)` is the authoritative model crop layer. It is the
+axis-aligned envelope of the whole park boundary in `EPSG:32734`, derived from
+OSM relation 338191 and stored in `data/vector/osm/tmnp_extent_north_up.gpkg`.
 
 | Property | Value |
 |---|---|
-| Sides | 15,350.59 m × 49,917.29 m |
-| Area | 766.2598 km² |
-| Long axis | 5.0454° off grid north (N 5.05° W) |
+| East–west × north–south | 18,479.41 m × 49,372.55 m |
+| Area | 912.3755 km² |
 | CRS | `EPSG:32734` |
-| Corner v0 | E 265504.213, N 6245080.005 |
-| Corner v1 | E 250213.104, N 6243729.986 |
-| Corner v2 | E 254603.118, N 6194006.112 |
-| Corner v3 | E 269894.227, N 6195356.131 |
 
-The rotated rectangle is 16.01% smaller in area than the north-up bounding box
-(18,479.41 m × 49,372.55 m = 912.3755 km²). It is tight: no part of the
-boundary lies outside it, and the extreme park points sit on its edges.
-
-## DuckDB inspection
-
-The project-local `.venv` contains DuckDB 1.5.5 and the Python timezone support needed by the community `osmium` extension. Install or refresh the environment with:
-
-```bash
-uv pip install --python .venv/bin/python -r scripts/duckdb/requirements.txt
-```
-
-Inspect the PBF with:
-
-```bash
-.venv/bin/python scripts/duckdb/inspect_pbf.py --name-like "Table Mountain"
-```
-
-The script uses `osmium_read()` explicitly so it receives reconstructed OSM geometries rather than the native node/way/relation reader.
+The envelope is north-up and contains every boundary vertex. Existing imagery
+and elevation rasters are retained as supersets; they are not re-cropped.
 
 ## Working rules
 

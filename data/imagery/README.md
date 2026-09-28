@@ -1,7 +1,7 @@
 # data/imagery
 
 Local copies of aerial / photographic imagery, clipped to the model extent
-(`qgis/bound.shp`).
+(`../vector/osm/tmnp_extent_north_up.gpkg`).
 
 Contents are gitignored (see the `data/imagery/*` rule plus the
 `!data/imagery/README.md` exception in the root `.gitignore`). Everything here
@@ -9,10 +9,12 @@ is regenerable from the commands recorded below.
 
 ---
 
-## coct_aerial_2026jan_1m_within_bound.tif
+## `aerial_1m.tif` and `aerial_5m.tif`
 
 Orthorectified colour aerial mosaic of the City of Cape Town, **January 2026
-(version 2)**, at 1 m/px, clipped to `bound`.
+(version 2)**. The local rasters retain the former, larger raster footprint as
+a superset of the north-up model extent; they are not re-cropped when the
+model extent changes.
 
 | Property | Value |
 |---|---|
@@ -20,10 +22,10 @@ Orthorectified colour aerial mosaic of the City of Cape Town, **January 2026
 | Service URL | `https://cityimg.capetown.gov.za/erdas-iws/ogc/wms/GeoSpatial Datasets` |
 | Layer name | `Aerial Imagery_Aerial Imagery 2026Jan` |
 | Native CRS / resolution | `EPSG:20482` at **0.05 m** |
-| Stored CRS / resolution | `EPSG:32734` at **1.0 m** |
-| Extent | `250509.6, 6194665.7, 270713.4, 6246802.1` (exactly `bound`) |
-| Size | 20204 x 52137 px, 3 bands RGB |
-| Compression | JPEG, quality 90, YCbCr, tiled, BigTIFF if needed |
+| Stored CRS / resolution | `EPSG:32734` at **1.0 m** (`aerial_1m.tif`) and 5.0 m (`aerial_5m.tif`) |
+| Extent | E 251408.358–270713.403, N 6195216.935–6246802.116 |
+| Size | 19,305 × 51,585 px (1 m) and 4,041 × 10,427 px (5 m), four bands |
+| Compression | tiled JPEG-compressed GeoTIFFs with external overview sidecars |
 
 ### Licensing — non-commercial only
 
@@ -41,68 +43,26 @@ project ever becomes commercial, written permission from CCT is required.
 > non-commercial *unless explicit permission is obtained*. Do not conflate the
 > two.
 
-### Coverage
+### 3D texture derivative
 
-The mosaic footprint begins at longitude **18.30289**, while `bound` begins at
-**18.28726**; the southern edge of the footprint is **-34.36050** against a
-bound edge of **-34.36400**. The western and southern margins of `bound`
-therefore fall outside the imagery.
-
-Measured against `data/vector/osm/land_within_bound.gpkg`:
-
-- 46.9 % of the bound is flat-toned, but **97.9 % of that is ocean** — the
-  orthophoto does cover water, it is simply smooth there.
-- Only **1.94 % of land** is blank, i.e. the no-imagery margins above.
-
-### Regenerating
-
-Run in the QGIS Processing toolbox, or from the Python console:
-
-```python
-import processing
-
-processing.run(
-    "gdal:warpreproject",
-    {
-        "INPUT": (
-            "WMS:https://cityimg.capetown.gov.za/erdas-iws/ogc/wms/GeoSpatial%20Datasets"
-            "?SERVICE=WMS&VERSION=1.3.0"
-            "&LAYERS=Aerial%20Imagery_Aerial%20Imagery%202026Jan&STYLES="
-            "&CRS=EPSG:32734"
-            "&BBOX=250509.6,6194665.7,270713.4,6246802.1"
-            "&WIDTH=5000&HEIGHT=5000&FORMAT=image/jpeg"
-        ),
-        "SOURCE_CRS": "EPSG:32734",
-        "TARGET_CRS": "EPSG:32734",
-        "RESAMPLING": 1,  # bilinear
-        "TARGET_RESOLUTION": 1.0,
-        "TARGET_EXTENT": "250509.6,270713.4,6194665.7,6246802.1 [EPSG:32734]",
-        "TARGET_EXTENT_CRS": "EPSG:32734",
-        "CREATION_OPTIONS": "COMPRESS=JPEG|TILED=YES|PHOTOMETRIC=YCBCR"
-        "|JPEG_QUALITY=90|BIGTIFF=IF_SAFER",
-        "MULTITHREADING": False,  # keep the request rate polite
-        "OUTPUT": "data/imagery/coct_aerial_2026jan_1m_within_bound.tif",
-    },
-)
-```
-
-`bound` is an axis-aligned rectangle in `EPSG:32734`, so giving the algorithm
-that extent **is** the clip; no separate mask step is needed. To clip against a
-non-rectangular boundary instead, follow with `gdal:cliprasterbymasklayer` using
-`qgis/bound.shp`.
+`aerial_texture_3d.tif` is a local, ignored 15 m texture generated from the 5 m
+raster over `../vector/osm/tmnp_extent_north_up.gpkg`. The saved 3D extent
+overlay uses this small derivative rather than loading the 1 m source as a GPU
+texture. Regenerate it with GDAL Warp using that GeoPackage envelope as the
+output bounds, `EPSG:32734`, cubic resampling, and JPEG-compressed tiled
+GeoTIFF output.
 
 Notes:
 
-- The service caps every request at **4000 x 4000 px**. `gdal:warpreproject`
-  sub-tiles automatically because it sets an explicit target grid. A bare
-  `gdal_translate` of a `WMS:` source does **not** work — the driver opens at a
-  1073741824 x 1073741824 virtual size and fails.
+- The service caps every request at **4000 x 4000 px**. A request must be
+  tiled; a bare `gdal_translate` of a `WMS:` source does not work because the
+  driver opens an impractically large virtual size.
 - The layer advertises only `EPSG:20482`, `EPSG:4326` and `EPSG:3857`, but it
   **does** serve `EPSG:32734`. That matters, because it is the same request path
   the live `Aerial imagery (2026 Jan)` WMS layer uses (`dpiMode=7`), which is
   why the local copy and the live layer register on top of each other.
-- Keep `MULTITHREADING` off unless you have a reason. It issues many concurrent
-  requests at a public municipal service.
+- Keep request concurrency low. It issues many requests to a public municipal
+  service.
 
 ### Verification
 

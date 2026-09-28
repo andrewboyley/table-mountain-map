@@ -3,7 +3,7 @@
 ## Subdirectories
 
 - `osm/` — downloaded OpenStreetMap PBF files and future extracts.
-- `terrain/` — raw and processed elevation rasters, contour surfaces, and height maps.
+- `elevation/` — raw and processed elevation rasters, contour surfaces, and height maps.
 - `vector/` — COCT boundaries, contours, buildings, roads, and other context vectors. The offline COCT 2 m contour dataset is documented in `vector/coct/README.md`.
 - `imagery/` — imagery and texture sources with recorded permissions.
 
@@ -19,7 +19,7 @@ Keep raw downloads unchanged. Put filtered extracts and processing outputs in se
 
 ## Table Mountain National Park extract
 
-`table-mountain-national-park.osm.pbf` is a rectangular clip of the national park relation's WGS84 extent:
+`table-mountain-bound-extent.osm.pbf` is a rectangular clip of the national park relation's WGS84 extent:
 
 ```text
 18.30722,-34.35834,18.4979771,-33.9117846
@@ -27,7 +27,10 @@ Keep raw downloads unchanged. Put filtered extracts and processing outputs in se
 
 It was created with Osmium's `complete_ways` strategy. This preserves complete ways and includes relations connected to the clipped area. The output header records the requested rectangle, while referenced complete geometries may extend beyond it.
 
-`../vector/table-mountain-national-park.gpkg` is a GDAL `ogr2ogr` export of the clipped PBF. It contains five OSM-driver layers (`points`, `lines`, `multilinestrings`, `multipolygons`, and `other_relations`) in `EPSG:32734`, with 154,377 features in total.
+The stable park-boundary product is `vector/osm/tmnp_relation_338191.gpkg`.
+The authoritative north-up crop envelope is
+`vector/osm/tmnp_extent_north_up.gpkg`; it contains the relation boundary and
+measures 18,479.41 m × 49,372.55 m (912.3755 km²) in `EPSG:32734`.
 
 ## Trail datasets
 
@@ -44,7 +47,7 @@ canonical layer names. Every step is order-invariant: processing the extract
 in a different feature order produces an identical result.
 
 Rebuild everything from the extract with a single command (prerequisites: QGIS
-4.2 with `qgis_process` on `PATH`, and the model registered in the Processing
+4.2 with qgis_process on `PATH`, and the model registered in the Processing
 models folder from the checked-in `qgis/processing/trail_rebuild.model3`):
 
 ```bash
@@ -94,3 +97,14 @@ gdaladdo -ro -r average <raster.tif> 2 4 8 16 32 64   # 1 m source
 
 Deleting a `.ovr` sidecar returns that raster to its previous, slow,
 full-resolution-only rendering — no source data is lost.
+
+## Additional local inventory
+
+- `elevation/South_Africa_SRMT30meters.zip` is a retained SRTM 30 m source
+  archive; it is not the terrain source for the saved 3D scene.
+- `vector/coct/contours_2m_within_bound.gpkg` is the clipped COCT contour
+  layer. `vector/coct/ground_level_map_2m_contours/Ground_Level_Map_2m_Contours.shp`
+  is the extracted source shapefile retained for provenance.
+- `vector/osm/land_coast_only.gpkg` supplies coastline context.
+- `vector/tiles_grid.gpkg` supplies the map tile grid.
+- `vector/tmnp/tmnp.shp` is a retained TMNP vector reference shapefile.

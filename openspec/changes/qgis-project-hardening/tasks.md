@@ -73,14 +73,14 @@
 
 ## 7. Documentation
 
-- [ ] 7.1 Replace the rotated crop-rectangle table in `README.md` with the north-up dimensions measured in 3.1
-- [ ] 7.2 Remove the rotated rectangle's corner coordinates and its comparison percentage
-- [ ] 7.3 Correct `data/README.md`: `terrain/` to `elevation/`
-- [ ] 7.4 Correct the OSM extract identity in `data/README.md` to the real file name, size and timestamp
-- [ ] 7.5 Remove or correct the reference to the absent five-layer park GeoPackage and its recorded feature count
-- [ ] 7.6 Remove or create the referenced `vector/coct/README.md`
-- [ ] 7.7 Add the trail datasets to the documented data inventory, with their build command and provenance
-- [ ] 7.8 Confirm the OSM attribution requirement and the restricted-imagery flag are still present after editing
+- [x] 7.1 Replace the rotated crop-rectangle table in `README.md` with the north-up dimensions measured in 3.1
+- [x] 7.2 Remove the rotated rectangle's corner coordinates and its comparison percentage
+- [x] 7.3 Correct `data/README.md`: `terrain/` to `elevation/`
+- [x] 7.4 Correct the OSM extract identity in `data/README.md` to the real file name, size and timestamp
+- [x] 7.5 Remove or correct the reference to the absent five-layer park GeoPackage and its recorded feature count
+- [x] 7.6 Remove or create the referenced `vector/coct/README.md`
+- [x] 7.7 Add the trail datasets to the documented data inventory, with their build command and provenance
+- [x] 7.8 Confirm the OSM attribution requirement and the restricted-imagery flag are still present after editing
 
 ## 8. Final verification
 
