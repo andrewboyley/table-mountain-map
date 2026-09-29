@@ -116,7 +116,9 @@ def main() -> int:
         help="Final GeoTIFF path (default: project elevation output)",
     )
     parser.add_argument(
-        "--overwrite", action="store_true", help="Replace a pre-existing final GeoTIFF"
+        "--overwrite",
+        action="store_true",
+        help="Rebuild the final GeoTIFF even when it is current",
     )
     parser.add_argument(
         "--fill-distance-pixels",
@@ -131,8 +133,29 @@ def main() -> int:
 
     ensure_input()
     output = args.output.resolve()
-    if output.exists() and not args.overwrite:
-        parser.error(f"Refusing to overwrite {output}; rerun with --overwrite")
+
+    # Freshness of the final surface is judged against the inputs it depends
+    # on: the contour source, the boundary mask (with its shapefile sidecars),
+    # and this build script itself.
+    inputs = [CONTOURS, BOUNDARY, Path(__file__).resolve()]
+    for suffix in ("dbf", "shx", "prj"):
+        sidecar = BOUNDARY.with_suffix(f".{suffix}")
+        if sidecar.exists():
+            inputs.append(sidecar)
+    inputs_mtime = max(path.stat().st_mtime for path in inputs)
+
+    rasterized = CACHE / "contour_cells_5m.tif"
+    filled = CACHE / "contour_cells_5m_filled.tif"
+    masked = CACHE / "contour_cells_5m_masked.tif"
+    final_fresh = output.exists() and output.stat().st_mtime >= inputs_mtime
+    intermediates_fresh = all(
+        path.exists() and path.stat().st_mtime >= inputs_mtime
+        for path in (rasterized, filled)
+    )
+
+    if final_fresh and intermediates_fresh:
+        print(f"Up to date: {output} and validation intermediates", flush=True)
+        return 0
 
     for executable in ("gdal_rasterize", "gdal_fillnodata", "gdalwarp"):
         if shutil.which(executable) is None:
@@ -140,6 +163,10 @@ def main() -> int:
 
     CACHE.mkdir(parents=True, exist_ok=True)
     output.parent.mkdir(parents=True, exist_ok=True)
+    write_final = not final_fresh or args.overwrite
+    for path in (rasterized, filled, masked):
+        if path.exists():
+            path.unlink()
     bounds = aligned_bounds(BOUNDARY, RESOLUTION)
     xmin, ymin, xmax, ymax = bounds
     width = round((xmax - xmin) / RESOLUTION)
@@ -149,13 +176,6 @@ def main() -> int:
         f"EPSG:32734 bounds {xmin:g},{ymin:g},{xmax:g},{ymax:g}",
         flush=True,
     )
-
-    rasterized = CACHE / "contour_cells_5m.tif"
-    filled = CACHE / "contour_cells_5m_filled.tif"
-    masked = CACHE / "contour_cells_5m_masked.tif"
-    for path in (rasterized, filled, masked):
-        if path.exists():
-            path.unlink()
 
     creation_options = ["TILED=YES", "COMPRESS=LZW", "BIGTIFF=IF_SAFER"]
     run(
@@ -275,11 +295,19 @@ def main() -> int:
     final_band.FlushCache()
     final_dataset = None
     constraint_dataset = None
+    if not write_final:
+        # The final surface is already current, so keep it untouched. Only
+        # the validation intermediates were missing or outdated.
+        if masked.exists():
+            masked.unlink()
+        print(f"Validation intermediates rebuilt; kept {output}", flush=True)
+        return 0
+
     if output.exists():
         output.unlink()
     masked.replace(output)
     set_metadata(output, bounds)
-    print(f"Wrote {output}")
+    print(f"Wrote {output}", flush=True)
     return 0
 
 

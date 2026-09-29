@@ -13,12 +13,12 @@ verify-project:
 verify-data subcommand='all':
     python3 scripts/verify_data.py {{ subcommand }}
 
-# Rebuild the contour DEM from the boundary mask
+# Rebuild the contour DEM from the boundary mask (skips when up to date)
 build-dem:
     python3 scripts/build_contour_dem.py
 
 # Verify the contour DEM bounds against the boundary envelope
-verify-dem:
+verify-dem: build-dem
     python3 scripts/verify_contour_dem.py
 
 # Every verification gate: data, project, DEM
