@@ -85,6 +85,15 @@ blender/*.blend1
 # files are not reproducible from this repo. Track them until a build script
 # exists; add an ignore rule at that point, not before.
 
+# --- QGIS project save side-files -----------------------------------------
+# QGIS >= 3.22 writes a <name>.qgs~ backup and a <name>_attachments.zip beside
+# the project file on every GUI save. Neither is disableable and both are
+# regenerable, so they are never committed; the tracked .qgs is always the
+# build output (see qgis/README.md). The generic `*~` and `*.zip` rules above
+# already matched these; the explicit rules document the intent.
+*.qgs~
+*_attachments.zip
+
 # --- Render output --------------------------------------------------------
 # Blender frames and videos.
 renders/*

@@ -48,6 +48,19 @@ Run on every commit and push as the `verify-project` pre-commit hook. Exits
 non-zero with a named failure if any invariant drifted (e.g. a GUI save that
 drops the 3D renderer or rewrites the 3D scene); fix with the build script.
 
+## GUI saves and side files
+
+Every GUI save in QGIS ≥ 3.22 writes a `<name>.qgs~` backup file and a
+`<name>_attachments.zip` archive next to the project. Neither can be disabled.
+Both are regenerable, so they are gitignored (`*.qgs~`, `*_attachments.zip`)
+and never committed. The tracked `.qgs` is always the output of
+`scripts/build_project.py`; if a GUI save drifts the tracked file, reconcile it
+by rebuilding rather than by committing the GUI version:
+
+```bash
+QT_QPA_PLATFORM=offscreen python3 scripts/build_project.py
+```
+
 ## Basemaps and attribution
 
 - `OpenStreetMap` — cached XYZ tiles from the local MapProxy
