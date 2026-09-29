@@ -283,3 +283,12 @@ please consider taking out a [Support Level Agreement](https://kartoza.erpnext.c
 Tim Sutton (tim@kartoza.com)
 Admire Nyakudya (admire@kartoza.com)
 November 2025
+
+## Project note: CoCT aerial cache grid
+
+This fork adds a `utm34s` grid (`EPSG:32734`, covering the TMNP crop extent)
+to `mapproxy_configuration/mapproxy.yaml` and points `coct_aerial_cache` at
+it. The CoCT ERDAS WMS serves real imagery only in its native `EPSG:32734`;
+`EPSG:3857` requests return blank tiles, so caching on the `webmercator` grid
+produced an empty aerial cache. The QGIS project requests the aerial layer as
+WMS in `EPSG:32734` (see `qgis/README.md`) and hits this cache directly.

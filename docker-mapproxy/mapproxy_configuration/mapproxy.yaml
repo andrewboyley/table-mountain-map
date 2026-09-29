@@ -33,7 +33,7 @@ caches:
       directory_layout: tms
 
   coct_aerial_cache:
-    grids: [webmercator]
+    grids: [utm34s]
     sources: [coct_aerial_wms]
     cache:
       type: file
@@ -75,6 +75,28 @@ grids:
     srs: 'EPSG:3857'
     # North-west origin matches the OpenStreetMap tile scheme.
     origin: nw
+
+  # CoCT erdas WMS serves real imagery only in its native EPSG:32734 (UTM
+  # zone 34S); EPSG:3857 requests return blank tiles (verified upstream,
+  # 2026-09-29). The aerial cache therefore uses a UTM 34S grid covering the
+  # TMNP crop extent so MapProxy always fetches upstream in 32734 and QGIS
+  # WMS requests in the project CRS hit the cache directly.
+  utm34s:
+    srs: 'EPSG:32734'
+    origin: nw
+    bbox: [250408.358, 6194216.935, 270887.765, 6245589.489]
+    tile_size: [256, 256]
+    res:
+      - 128
+      - 64
+      - 32
+      - 16
+      - 8
+      - 4
+      - 2
+      - 1
+      - 0.5
+      - 0.25
 
 globals:
   cache:
