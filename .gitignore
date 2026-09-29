@@ -18,6 +18,14 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 
+# --- SQLite WAL journal sidecars ------------------------------------------
+# Opening a GeoPackage in QGIS (or any SQLite client) can leave -wal/-shm
+# companions or touch the header; the database content is the source of truth.
+*.gpkg-wal
+*.gpkg-shm
+*.sqlite-wal
+*.sqlite-shm
+
 # --- Editor / OS noise ----------------------------------------------------
 .DS_Store
 Thumbs.db
