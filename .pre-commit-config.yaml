@@ -6,15 +6,27 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+      - id: check-added-large-files
+        args: [--maxkb=5120]
+      - id: check-ast
+        files: ^scripts/.*\.py$
       - id: check-json
       - id: check-merge-conflict
       - id: check-yaml
       - id: end-of-file-fixer
         exclude: >-
-          ^(?:\.mcp\.json|opencode\.json|qgis/bound\.prj|data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound_bgis\.wld|data/vector/osm/trail_datasets\.manifest\.json|data/vector/tmnp/tmnp\.(?:cpg|prj))$
+          ^(?:\.mcp\.json|opencode\.json|data/vector/osm/trail_datasets\.manifest\.json)$
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: trailing-whitespace
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.9
+    hooks:
+      - id: ruff-format
+        files: ^scripts/
+      - id: ruff
+        files: ^scripts/
 
   - repo: local
     hooks:
@@ -32,3 +44,9 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-commit, pre-push]
+      - id: validate-processing-model
+        name: validate trail_rebuild processing model
+        entry: bash -c 'QT_QPA_PLATFORM=offscreen qgis_process help qgis/processing/trail_rebuild.model3 >/dev/null'
+        language: system
+        pass_filenames: false
+        files: ^qgis/processing/trail_rebuild\.model3$

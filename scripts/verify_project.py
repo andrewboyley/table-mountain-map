@@ -36,7 +36,7 @@ from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from qgis.core import (  # noqa: E402
+from qgis.core import (
     QgsApplication,
     QgsCategorizedSymbolRenderer,
     QgsProject,
@@ -108,7 +108,7 @@ def load_palette() -> list[tuple[str, str, float]]:
 
 
 def maplayer_blocks(xml_text: str) -> list[str]:
-    return re.findall(r"<maplayer\b[^>]*>.*?</maplayer>", xml_text, re.S)
+    return re.findall(r"<maplayer\b[^>]*>.*?</maplayer>", xml_text, re.DOTALL)
 
 
 def block_for_layer(xml_text: str, layer_name: str) -> str | None:
@@ -120,7 +120,7 @@ def block_for_layer(xml_text: str, layer_name: str) -> str | None:
 
 
 def qgis3d_block(xml_text: str) -> str | None:
-    m = re.search(r"<qgis3d>.*?</qgis3d>", xml_text, re.S)
+    m = re.search(r"<qgis3d>.*?</qgis3d>", xml_text, re.DOTALL)
     return m.group(0) if m else None
 
 
@@ -265,7 +265,7 @@ def main(argv: list[str] | None = None) -> int:
             ('field-of-view="65"', "camera FOV 65"),
         ):
             rep.check(f"3D stamp: {label}", needle in q3)
-        scene_ids = re.findall(r"<layers>\s*(.*?)\s*</layers>", q3, re.S)
+        scene_ids = re.findall(r"<layers>\s*(.*?)\s*</layers>", q3, re.DOTALL)
         scene_lid = (
             re.findall(r'<layer id="([^"]+)"', scene_ids[0]) if scene_ids else []
         )
@@ -293,7 +293,9 @@ def main(argv: list[str] | None = None) -> int:
                 atlas.beginRender()
                 pages = atlas.count()
                 atlas.endRender()
-            except Exception as exc:  # pragma: no cover - defensive
+            # QGIS/Qt raise heterogeneous exception types offscreen; degrade to
+            # an unavailable page count instead of failing the gate.
+            except Exception as exc:  # pragma: no cover - defensive  # noqa: BLE001
                 pages = -1
                 print(f"  note: atlas page count unavailable ({exc})")
             rep.check(
@@ -303,7 +305,7 @@ def main(argv: list[str] | None = None) -> int:
             )
 
         # --- layout LayerSet (XML) ----------------------------------------------
-        ls = re.search(r"<LayerSet>.*?</LayerSet>", xml_text, re.S)
+        ls = re.search(r"<LayerSet>.*?</LayerSet>", xml_text, re.DOTALL)
         ls_entries = (
             dict(re.findall(r'<Layer name="([^"]+)"[^>]*>([^<]+)</Layer>', ls.group(0)))
             if ls
@@ -353,7 +355,7 @@ def main(argv: list[str] | None = None) -> int:
             provider = re.search(r"<provider>([^<]+)</provider>", block)
             if not provider or provider.group(1) not in ("ogr", "gdal"):
                 continue
-            ds = re.search(r"<datasource>(.*?)</datasource>", block, re.S)
+            ds = re.search(r"<datasource>(.*?)</datasource>", block, re.DOTALL)
             if not ds:
                 continue
             src = html.unescape(ds.group(1))

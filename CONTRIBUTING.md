@@ -63,9 +63,24 @@ python3 -m pip install --user pre-commit
 pre-commit install
 ```
 
-The commit hook checks structured files, merge-conflict markers, line endings,
-end-of-file newlines, and trailing whitespace. The push hook runs the complete
-project verifier:
+The commit hooks check:
+
+- added files stay under the 5120 KB large-file threshold
+  (`check-added-large-files`), which is why the largest tracked binary,
+  `data/vector/tiles_grid.gpkg` at 4.4 MB, stays in history;
+- Python AST validity (`check-ast`) and formatting plus linting with
+  [ruff](https://docs.astral.sh/ruff/) (`ruff-format` then `ruff`) across
+  `scripts/`;
+- structured files, merge-conflict markers, line endings, end-of-file
+  newlines, and trailing whitespace;
+- the QGIS project artifact (`verify-project` — loads headlessly and checks
+  the invariants documented in `qgis/README.md`);
+- the `qgis/processing/trail_rebuild.model3` Processing model
+  (`validate-processing-model` — runs
+  `QT_QPA_PLATFORM=offscreen qgis_process help qgis/processing/trail_rebuild.model3`
+  as a headless model validation).
+
+The push hooks run the complete data verifier:
 
 ```bash
 python3 scripts/verify_data.py all
@@ -80,6 +95,15 @@ the complete configured set manually with:
 pre-commit run --all-files
 pre-commit run --hook-stage pre-push --all-files
 ```
+
+### Maintaining the hook configuration
+
+- `pre-commit autoupdate` — bump the pinned hook revisions to their latest
+  tags. Review the resulting `.pre-commit-config.yaml` diff before committing.
+- `pre-commit migrate-config` — migrate the config to the current pre-commit
+  schema (e.g. when upgrading from an older pre-commit major version).
+- `pre-commit validate-config` — parse and validate the config without
+  running hooks.
 
 ## Changes
 

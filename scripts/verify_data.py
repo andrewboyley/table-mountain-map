@@ -24,7 +24,7 @@ import re
 import sys
 from pathlib import Path
 
-from osgeo import gdal, ogr, osr
+from osgeo import gdal, ogr
 
 gdal.UseExceptions()
 ogr.UseExceptions()
@@ -201,7 +201,7 @@ def check_crop_extent() -> int:
         srs_code(layer) or "none",
     )
 
-    geom = [f.GetGeometryRef().Clone() for f in layer][0]
+    geom = next(f.GetGeometryRef().Clone() for f in layer)
     minx, maxx, miny, maxy = geom.GetEnvelope()
 
     # North-up: every edge parallel to a grid axis.
@@ -230,7 +230,8 @@ def check_crop_extent() -> int:
     rep.check(
         "side lengths match the published boundary envelope",
         len_ok,
-        "%.2f x %.2f m (expected %.2f x %.2f)" % (*lengths, *EXPECTED_EXTENT_LENGTHS_M),
+        f"{lengths[0]:.2f} x {lengths[1]:.2f} m"
+        f" (expected {EXPECTED_EXTENT_LENGTHS_M[0]:.2f} x {EXPECTED_EXTENT_LENGTHS_M[1]:.2f})",
     )
     area_km2 = geom.GetArea() / 1e6
     rep.check(
@@ -392,12 +393,16 @@ def check_trails() -> int:
                     for p in iter_parts(g)
                     if ogr.GeometryTypeToName(p.GetGeometryType()).find("POLYGON") == -1
                 )
-            except Exception:
+            except RuntimeError:
+                # GDAL (UseExceptions is on) raises RuntimeError subtypes; any
+                # geometry-reading snag means "treat as single part".
                 pcount = 1
             parts_hist[pcount] = parts_hist.get(pcount, 0) + 1
-            if layer.GetLayerDefn().GetFieldIndex("name") >= 0:
-                if not (feat.GetField("name") or "").strip():
-                    blank_names += 1
+            if (
+                layer.GetLayerDefn().GetFieldIndex("name") >= 0
+                and not (feat.GetField("name") or "").strip()
+            ):
+                blank_names += 1
         rep.check(
             f"{rel} [{layername}] geometry all valid",
             invalid == 0,
@@ -517,7 +522,6 @@ def check_trails() -> int:
         ext = prov.get("extract", {})
         pbf = ROOT / ext.get("relpath", "")
         if pbf.exists():
-            import time
             from datetime import datetime, timezone
 
             cur = pbf.stat()

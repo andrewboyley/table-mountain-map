@@ -48,9 +48,17 @@ import uuid
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from pathlib import Path  # noqa: E402
+from pathlib import Path
 
-from qgis.core import (  # noqa: E402
+from PyQt6.QtGui import QColor
+from qgis._3d import (
+    Qgs3DRendererCategory,
+    Qgs3DTypes,
+    QgsCategorized3DRenderer,
+    QgsLine3DSymbol,
+    QgsMetalRoughMaterialSettings,
+)
+from qgis.core import (
     QgsApplication,
     QgsCategorizedSymbolRenderer,
     QgsCoordinateReferenceSystem,
@@ -60,14 +68,6 @@ from qgis.core import (  # noqa: E402
     QgsProject,
     QgsRendererCategory,
 )
-from qgis._3d import (  # noqa: E402
-    Qgs3DRendererCategory,
-    Qgs3DTypes,
-    QgsCategorized3DRenderer,
-    QgsLine3DSymbol,
-    QgsMetalRoughMaterialSettings,
-)
-from PyQt6.QtGui import QColor  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROJECT = ROOT / "qgis" / "table_mountain_3D.qgs"
@@ -409,7 +409,7 @@ def canonicalize_category_uuids(xml_text: str) -> str:
         tag = match.group(0)
         value = re.search(r'\bvalue="([^"]*)"', tag)
         symbol = re.search(r'\bsymbol="([^"]*)"', tag)
-        key = "{0}|{1}".format(
+        key = "{}|{}".format(
             value.group(1) if value else "",
             symbol.group(1) if symbol else "",
         )
@@ -428,7 +428,7 @@ def stamp_qgis3d(xml_text: str, id_by_part: dict[str, str]) -> str:
     stamp = QGS3D_STAMP.replace("{dem_layer_id}", id_by_part[DEM_PART]).replace(
         "{scene_layer_ids}", scene
     )
-    m = re.search(r"<qgis3d>.*?</qgis3d>", xml_text, re.S)
+    m = re.search(r"<qgis3d>.*?</qgis3d>", xml_text, re.DOTALL)
     if not m:
         sys.exit("no <qgis3d> block found in the written project")
     return xml_text[: m.start()] + stamp + xml_text[m.end() :]
@@ -436,7 +436,7 @@ def stamp_qgis3d(xml_text: str, id_by_part: dict[str, str]) -> str:
 
 def patch_layerset(xml_text: str, trail_id: str, contours_id: str) -> str:
     """Force the atlas map's LayerSet to coverage + contours (relative)."""
-    ls = re.search(r"<LayerSet>.*?</LayerSet>", xml_text, re.S)
+    ls = re.search(r"<LayerSet>.*?</LayerSet>", xml_text, re.DOTALL)
     if ls is None:
         return xml_text
     new_ls = (
