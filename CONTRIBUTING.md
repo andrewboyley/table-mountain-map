@@ -68,17 +68,17 @@ pre-commit install
 The push hooks run the complete data verifier:
 
 ```bash
-python3 scripts/verify_data.py all
+just verify-data
 ```
 
 It uses the GDAL-enabled `/usr/bin/python3` supplied by the QGIS installation and needs the local geospatial inputs documented in `data/README.md`. That is why it is a pre-push hook, not a requirement for every commit. Run the complete configured set manually with:
 
 ```bash
-pre-commit run --all-files
-pre-commit run --hook-stage pre-push --all-files
+just check
+just check-push
 ```
 
-You can run the same gates with `just`. `just check` runs every pre-commit hook on all files. `just verify` builds the contour-DEM intermediates first, then runs `verify_data.py all`, `verify_project.py`, and `verify_contour_dem.py`. Bare `just` rebuilds the project and then runs `verify`. See the `justfile` for the full list.
+You can run the same gates with `just`. `just check` runs every pre-commit hook on all files. `just verify` runs `verify-data`, `verify-project`, and `verify-dem` in order, building the contour-DEM intermediates first. Bare `just` runs `build` then `verify`. Every project command routes through the `justfile`.
 
 ### Working with pre-commit
 

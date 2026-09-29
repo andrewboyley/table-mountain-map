@@ -21,7 +21,7 @@ This is a 5 m contour-derived elevation surface for the project boundary. It is 
 The pipeline uses GDAL command-line tools and the system Python GDAL bindings. It never launches QGIS or uses its processing providers.
 
 ```bash
-python scripts/build_contour_dem.py
+just build-dem
 ```
 
 It uses a fixed 5 m grid aligned outward from the boundary's extent. The contour clip does not extend fully to the west and south sides of `bound`, so the configured inverse-distance search reaches all interior cells. This is controlled extrapolation from the available contours, not new terrain measurement.
@@ -29,19 +29,17 @@ It uses a fixed 5 m grid aligned outward from the boundary's extent. The contour
 The builder is idempotent (safe to run twice). It rebuilds the surface only when the source contours or the boundary mask are newer than the current output. It rebuilds the validation intermediates whenever they are missing or outdated, so validation still works after `cache/` is cleared. Rebuild a current output only on purpose:
 
 ```bash
-python scripts/build_contour_dem.py --overwrite
+just build-dem-force
 ```
 
 `just verify` runs this builder before the DEM validation, so the order is handled for you. Intermediate inputs and diagnostic products live in `cache/contour_dem/`. Both the intermediate data and the final GeoTIFF are ignored by Git because they are reproducible derivatives.
 
 ## Overviews after a clean checkout
 
-The DEM's `.ovr` overview pyramid and `.aux.xml` sidecar are gitignored (`data/elevation/*.{ovr,aux.xml,wld}`). They are regenerable and never committed. After a fresh clone, rebuild the overview pyramid with the command recorded in `data/README.md`:
+The DEM's `.ovr` overview pyramid and `.aux.xml` sidecar are gitignored (`data/elevation/*.{ovr,aux.xml,wld}`). They are regenerable and never committed. After a fresh clone, rebuild the overview pyramid with:
 
 ```bash
-gdaladdo -ro -r average \
-  data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif \
-  2 4 8 16 32
+just build-overviews
 ```
 
 The source raster itself is never rewritten.
@@ -49,7 +47,7 @@ The source raster itself is never rewritten.
 ## Make sure the DEM is usable
 
 ```bash
-python scripts/verify_contour_dem.py
+just verify-dem
 ```
 
 The report is written to `cache/contour_dem/contour_dem_5m_validation.json`. A successful report states these facts:

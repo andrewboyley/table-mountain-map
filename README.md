@@ -26,10 +26,10 @@ docker-mapproxy/      local MapProxy service for the basemaps
 The repository excludes large source and derived binaries on purpose. Restore them from the sources recorded in the `data/` READMEs, then make sure the restored state is correct. Run this from the repository root:
 
 ```bash
-python3 scripts/verify_data.py
+just verify-data
 ```
 
-The verified trail outputs can be rebuilt with the single QGIS Processing-model command in `data/README.md`. Terrain-source research and access limits are in `docs/terrain_data_findings.md`.
+The verified trail outputs can be rebuilt with `just rebuild-trails`. The prerequisites are described in `data/README.md`. Terrain-source research and access limits are in `docs/terrain_data_findings.md`.
 
 ### System requirements
 
@@ -56,16 +56,16 @@ If the portal is unreachable, request the dataset from `city.maps@capetown.gov.z
 ### Make sure a build is correct
 
 ```bash
-python3 scripts/verify_data.py
+just verify-data
 ```
 
 This makes sure that the SHA-256 of the pinned raw downloads is correct. It makes sure that the feature counts and CRS of every derived layer are correct. It makes sure that the TMNP boundary area matches the recorded value. It makes sure that the QGIS project uses `EPSG:32734` with only relative paths. The relative paths let the project survive a move or clone.
 
-The QGIS project lives at `qgis/table_mountain_3D.qgs` as plain XML. It is a build artifact, not a hand-saved file. `python3 scripts/build_project.py` loads it headlessly, applies the canonical state, and writes plain XML. `python3 scripts/verify_project.py` is the gate that runs at commit time. It loads the `.qgs` headlessly and exits non-zero when any invariant is wrong. Running `build_project.py` twice on unchanged inputs writes byte-identical files, so the project diff stays reviewable.
+The QGIS project lives at `qgis/table_mountain_3D.qgs` as plain XML. It is a build artifact, not a hand-saved file. `just build` loads it headlessly, applies the canonical state, and writes plain XML. `just verify-project` is the gate that runs at commit time. It loads the `.qgs` headlessly and exits non-zero when any invariant is wrong. Running the build twice on unchanged inputs writes byte-identical files, so the project diff stays reviewable.
 
 The clip PBF rebuilds byte-identically. The GeoPackage cannot, because GDAL writes a `last_change` timestamp into `gpkg_contents` on every save. The bytes always differ when the data is identical. That is why the GeoPackage is compared by content and geometry, not by checksum.
 
-You can run the same gates with `just`. `just` rebuilds the project and runs the verification gates. `just check` runs every pre-commit hook on all files. `just verify` builds the contour-DEM intermediates first, then runs the three verification scripts. The `justfile` lists every recipe.
+You can run the same gates with `just`. `just` rebuilds the project and runs the verification gates. `just check` runs every pre-commit hook on all files. `just verify` builds the contour-DEM intermediates first, then runs the three verification scripts. The `justfile` lists every recipe and is the single entry point for project commands.
 
 ## Scripts
 

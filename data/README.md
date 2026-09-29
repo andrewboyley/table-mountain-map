@@ -35,24 +35,13 @@ One Processing model, `qgis/processing/trail_rebuild.model3`, derives them from 
 
 Every step is order-invariant. Processing the extract in a different feature order produces an identical result.
 
-Rebuild everything from the extract with a single command. You need QGIS 4.2 with qgis_process on `PATH`, and the model registered in the Processing models folder from the checked-in `qgis/processing/trail_rebuild.model3`:
+Rebuild everything from the extract with a single command, `just rebuild-trails`. You need QGIS 4.2 with qgis_process on `PATH`, and the model registered in the Processing models folder from the checked-in `qgis/processing/trail_rebuild.model3`. The justfile recipe holds the full parameter set.
 
-```bash
-qgis_process run model:trail_rebuild \
-  --ELLIPSOID=EPSG:7030 \
-  --INPUT_PBF=data/osm/table-mountain-bound-extent.osm.pbf \
-  --INPUT_BOUNDARY=data/vector/osm/tmnp_relation_338191.gpkg \
-  --HIGHWAY_VALUES=path,steps,footway \
-  --output_named=data/vector/osm/tm_hiking_trails_named.gpkg \
-  --output_dissolved=data/vector/osm/tm_hiking_trails_dissolved.gpkg \
-  --output_supplement=data/vector/osm/tm_trail_supplement.gpkg
-```
-
-The same model runs from the Processing toolbox (Processing → Models → `trail_rebuild`) with the same parameter values and produces identical outputs. The command line is exactly the GUI model's parameter set.
+The same model runs from the Processing toolbox (Processing → Models → `trail_rebuild`) with the same parameter values and produces identical outputs.
 
 Provenance (extract, boundary, filter, dissolve rule, CRS), per-dataset feature counts, total length, the single-part trail count, and informational checksums are recorded in `vector/osm/trail_datasets.manifest.json`.
 
-The gate compares content and geometry, never bytes. GeoPackage files embed a save-time timestamp, so byte checksums are not an acceptance test. The acceptance path is `../scripts/verify_data.py trails`.
+The gate compares content and geometry, never bytes. GeoPackage files embed a save-time timestamp, so byte checksums are not an acceptance test. The acceptance path is `just verify-data trails`.
 
 ## Raster performance
 
@@ -70,6 +59,8 @@ Regenerate any of them the same way, with the level list varying:
 gdaladdo -ro -r average <raster.tif> 2 4 8 16 32      # 5 m sources
 gdaladdo -ro -r average <raster.tif> 2 4 8 16 32 64   # 1 m source
 ```
+
+The DEM pyramid rebuilds with `just build-overviews`.
 
 Deleting a `.ovr` sidecar returns that raster to its previous slow, full-resolution-only rendering. No source data is lost.
 

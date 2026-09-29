@@ -5,10 +5,10 @@
 ## Build the project
 
 ```bash
-QT_QPA_PLATFORM=offscreen python3 scripts/build_project.py
+just build
 ```
 
-`--input` and `--output` default to `qgis/table_mountain_3D.qgs`. Pass `--input qgis/table_mountain_3D.qgz` to migrate a legacy `.qgz`. The build enforces:
+The underlying script accepts `--input` and `--output`, defaulting to `qgis/table_mountain_3D.qgs`. Pass `--input qgis/table_mountain_3D.qgz` to migrate a legacy `.qgz`. The build enforces:
 
 - project CRS `EPSG:32734`.
 - the layer tree (`Elevation` / `Paths` / `Shapes` / `Basemaps`) with `Hiking Trails` first under `Paths`.
@@ -23,10 +23,10 @@ QT_QPA_PLATFORM=offscreen python3 scripts/build_project.py
 ## Run the project gate
 
 ```bash
-QT_QPA_PLATFORM=offscreen python3 scripts/verify_project.py
+just verify-project
 ```
 
-This runs at commit and push time as the `verify-project` pre-commit hook. It exits non-zero with a named failure when an invariant drifts. A GUI save can drop the 3D renderer or rewrite the 3D scene. Fix the drift by rebuilding with `scripts/build_project.py`.
+This runs at commit and push time as the `verify-project` pre-commit hook. It exits non-zero with a named failure when an invariant drifts. A GUI save can drop the 3D renderer or rewrite the 3D scene. Fix the drift by rebuilding with `just build`.
 
 ## GUI saves and side files
 
@@ -35,7 +35,7 @@ Every GUI save in QGIS 3.22 or later writes a `<name>.qgs~` backup file and a `<
 The tracked `.qgs` is always the output of `scripts/build_project.py`. If a GUI save drifts the tracked file, rebuild it. Do not commit the GUI version.
 
 ```bash
-QT_QPA_PLATFORM=offscreen python3 scripts/build_project.py
+just build
 ```
 
 ## Basemaps and attribution

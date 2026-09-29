@@ -15,7 +15,7 @@ just verify
 just check
 ```
 
-`just verify` builds the contour-DEM intermediates first, then runs the three verification scripts. `just check` runs every pre-commit hook on all files. You can run them without `just`, but `just` is the documented way. The `justfile` lists every recipe.
+`just verify` builds the contour-DEM intermediates first, then runs the three verification scripts. `just check` runs every pre-commit hook on all files. Use `just` as the single entry point for project commands. The `justfile` lists every recipe.
 
 The QGIS project at `qgis/table_mountain_3D.qgs` is a build artifact. Do not hand-edit it. If it drifts, rebuild it with `just build` and commit the byte-identical output.
 
@@ -30,7 +30,7 @@ The QGIS project at `qgis/table_mountain_3D.qgs` is a build artifact. Do not han
 
 ## Data rules
 
-Large source and derived binaries are not tracked. Restore them from the sources recorded in the `data/` READMEs. Raster overview sidecars (`.ovr`, `.aux.xml`, `.wld`) are ignored and regenerable with the recorded `gdaladdo -ro` commands. The COCT 2 m contour zip is user-handled. It is not in git and you do not fetch it.
+Large source and derived binaries are not tracked. Restore them from the sources recorded in the `data/` READMEs. Raster overview sidecars (`.ovr`, `.aux.xml`, `.wld`) are ignored and regenerable with the recorded `gdaladdo -ro` commands. The DEM pyramid rebuilds with `just build-overviews`. The COCT 2 m contour zip is user-handled. It is not in git and you do not fetch it.
 
 `cache/` holds temporary files only. You can clear it. `renders/` holds final images and video.
 
