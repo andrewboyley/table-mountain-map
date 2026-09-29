@@ -25,3 +25,10 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-push]
+      - id: verify-project
+        name: verify QGIS project artifact
+        entry: /usr/bin/python3 scripts/verify_project.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit, pre-push]

@@ -66,6 +66,8 @@ python3 scripts/verify_data.py
 
 Checks SHA-256 of the pinned raw downloads, feature counts and CRS of every derived layer, the TMNP boundary area in square metres, and that the QGIS project uses `EPSG:32734` with only relative paths so it survives a move or clone.
 
+The QGIS project is stored as plain XML at `qgis/table_mountain_3D.qgs` and is a reproducible build artifact rather than a hand-saved file. `python3 scripts/build_project.py` re-enforces the canonical state — project CRS, the single 172-trail categorized layer (2D and 3D), the map themes, the 3D scene XML, the basemap sources (CoCT aerial as MapProxy WMS in `EPSG:32734`, OSM on cached XYZ), relative paths, and the embedded presentation macro — and writes a byte-identical file across runs. `python3 scripts/verify_project.py` is the pre-commit gate that loads the `.qgs` headlessly and asserts every one of those invariants.
+
 The clip PBF rebuilds **byte-identically**. The GeoPackage does not, and cannot: GDAL writes a `last_change` timestamp into `gpkg_contents` on every save, so the bytes always differ even when the data is identical. That is why the GeoPackage is checked by content and geometry rather than by checksum.
 
 ## Current data
@@ -75,7 +77,7 @@ The clip PBF rebuilds **byte-identically**. The GeoPackage does not, and cannot:
 - `data/vector/osm/tmnp_relation_338191.gpkg` — Table Mountain National Park boundary, OSM relation 338191, 249.91 km², `EPSG:32734`.
 - `data/vector/osm/tmnp_extent_north_up.gpkg` — authoritative north-up model crop envelope derived from relation 338191, `EPSG:32734`.
 - `data/vector/osm/tm_hiking_trails_dissolved.gpkg`, `data/vector/osm/tm_hiking_trails_named.gpkg` and `data/vector/osm/tm_trail_supplement.gpkg` — reproducible named-trail and bulk trail outputs; provenance is in `data/vector/osm/trail_datasets.manifest.json`.
-- `qgis/table_mountain_3D.qgz` — QGIS project.
+- `qgis/table_mountain_3D.qgs` — QGIS project (plain XML, reproducible build artifact — see "Verifying a build").
 - `docs/terrain_data_findings.md` — elevation-source research and access limits.
 - `docs/osm_pbf_inspection.md` — DuckDB inspection results and Table Mountain feature IDs.
 

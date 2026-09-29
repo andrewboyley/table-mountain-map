@@ -30,7 +30,7 @@ The final animation style and the treatment of buildings and trees are not yet s
 
 ## Project state
 
-The QGIS project is stored at `/home/andrew/Projects/table-mountain-pov/qgis/table_mountain_3D.qgz`. It uses `EPSG:32734` for project geometry and contains the permitted OSM context layers plus the offline COCT 2 m contour layer in the `COCT elevation` group. The contour source is in `ESRI:102562` and is reprojected on the fly by QGIS. It is a contour-derived surface, not a continuous measured DTM.
+The QGIS project is stored at `/home/andrew/Projects/table-mountain-pov/qgis/table_mountain_3D.qgs`. It uses `EPSG:32734` for project geometry and contains the permitted OSM context layers plus the offline COCT 2 m contour layer in the `COCT elevation` group. The contour source is in `ESRI:102562` and is reprojected on the fly by QGIS. It is a contour-derived surface, not a continuous measured DTM.
 
 No raw City DEM, Blender scene, terrain mesh, texture export, or animation exists in the project yet. The project can generate `data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif` headlessly with `scripts/build_contour_dem.py`; it is a 5 m GDAL inverse-distance interpolation from the 2 m contours, with a separate structural and constraint-preservation report from `scripts/verify_contour_dem.py`. It is a contour-derived elevation surface—not a measured City LiDAR DEM—and its technical validation cannot establish independent grid-cell accuracy. The project-local OpenCode configuration remains in `/home/andrew/Projects/table-mountain-pov/opencode.json`.
 
