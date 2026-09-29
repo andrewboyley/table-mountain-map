@@ -60,7 +60,6 @@ BIG_RASTERS = (
     "data/imagery/aerial_1m.tif",
     "data/imagery/aerial_5m.tif",
     "data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif",
-    "data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound_bgis.tif",
 )
 
 EXPECTED_TRAIL_DATASETS = (
@@ -80,8 +79,8 @@ TOP_LEVEL_DIRS = (
     "cache",
     "renders",
     "blender",
+    "docker-mapproxy",
     "openspec",
-    "tools",
 )
 BACKTICKED = re.compile(r"`([^`\n]+)`")
 MARKDOWN_LINK = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")

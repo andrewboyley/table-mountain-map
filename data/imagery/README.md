@@ -16,6 +16,10 @@ Orthorectified colour aerial mosaic of the City of Cape Town, **January 2026
 a superset of the north-up model extent; they are not re-cropped when the
 model extent changes.
 
+> Provenance: the orthophoto was formerly staged as `aerial.tif`; the current
+> files are `aerial_1m.tif` (native grid) and `aerial_5m.tif` (averaged-down
+> derivative). Nothing in the repository references the old `aerial.tif` name.
+
 | Property | Value |
 |---|---|
 | Service | COCT WMS `GeoSpatial Datasets` |

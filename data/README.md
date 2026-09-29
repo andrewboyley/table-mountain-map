@@ -85,7 +85,6 @@ the operation.
 | `imagery/aerial_1m.tif` | 19305 × 51585 | 2, 4, 8, 16, 32, 64 | average | `aerial_1m.tif.ovr` (1.3 GB) |
 | `imagery/aerial_5m.tif` | 4041 × 10427 | 2, 4, 8, 16, 32 | average | `aerial_5m.tif.ovr` (56 MB) |
 | `elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif` | 4042 × 10428 | 2, 4, 8, 16, 32 | average | `.tif.ovr` (58 MB) |
-| `elevation/table_mountain_contours_2m_interpolated_5m_within_bound_bgis.tif` | 4042 × 10428 | 2, 4, 8, 16, 32 | average | `.tif.ovr` (56 MB) |
 
 Regenerating any of them (all rasters above the threshold are processed the
 same way, with the level list varying):
@@ -110,4 +109,3 @@ full-resolution-only rendering — no source data is lost.
 - `vector/bound/bound.shp` is the DEM boundary mask — the envelope that the
   contour-derived DEM is aligned and rasterized against (`bound`). It is
   distinct from the authoritative crop extent above.
-- `vector/tmnp/tmnp.shp` is a retained TMNP vector reference shapefile.

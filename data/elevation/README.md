@@ -45,6 +45,21 @@ Intermediate inputs and diagnostic products live in `cache/contour_dem/`.
 Both the intermediate data and final GeoTIFF are ignored by Git because they
 are reproducible derivatives.
 
+## Overviews after a clean checkout
+
+The DEM's `.ovr` overview pyramid and `.aux.xml` sidecar are gitignored
+(`data/elevation/*.{ovr,aux.xml,wld}`); they are regenerable and never
+committed. After a fresh clone, rebuild the overview pyramid with the command
+recorded in `data/README.md`:
+
+```bash
+gdaladdo -ro -r average \
+  data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif \
+  2 4 8 16 32
+```
+
+The source raster itself is never rewritten.
+
 ## Verify before use
 
 ```bash
