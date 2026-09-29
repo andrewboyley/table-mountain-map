@@ -21,5 +21,54 @@
         ]
       }
     }
+  },
+  "permissions": [
+    { "action": "shell", "resource": "sudo *", "effect": "deny" },
+    { "action": "shell", "resource": "git push *", "effect": "ask" },
+    { "action": "shell", "resource": "rm *", "effect": "ask" },
+    { "action": "shell", "resource": "uv *", "effect": "ask" },
+    { "action": "shell", "resource": "uvx *", "effect": "ask" },
+    { "action": "shell", "resource": "pip *", "effect": "ask" },
+    { "action": "shell", "resource": "docker *", "effect": "ask" },
+    { "action": "shell", "resource": "just *", "effect": "allow" },
+    { "action": "shell", "resource": "pre-commit *", "effect": "allow" },
+    { "action": "shell", "resource": "python3 scripts/*", "effect": "allow" },
+    { "action": "shell", "resource": "python3 -m py_compile *", "effect": "allow" },
+    { "action": "shell", "resource": "gdal*", "effect": "allow" },
+    { "action": "shell", "resource": "qgis_process *", "effect": "allow" },
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git log *", "effect": "allow" },
+    { "action": "shell", "resource": "git show *", "effect": "allow" },
+    { "action": "shell", "resource": "git branch *", "effect": "allow" },
+    { "action": "shell", "resource": "git add *", "effect": "allow" },
+    { "action": "shell", "resource": "git commit *", "effect": "allow" }
+  ],
+  "commands": {
+    "verify": {
+      "description": "Run the repository verification gate",
+      "template": "Run the repository verification gate with `just verify`. If any check fails, investigate the cause, fix it, and re-run the gate until it is green. Then report every check and its result."
+    },
+    "check": {
+      "description": "Run every pre-commit hook",
+      "template": "Run `just check` to execute every pre-commit hook on all files. Fix anything the hooks reject, then re-run until `just check` passes. Report the hook list and results."
+    },
+    "gates": {
+      "description": "Run both repository gates",
+      "template": "Run both repository gates in order: `just verify` then `just check`. Fix any failure and re-run until both are green. Then report the result of every check."
+    },
+    "commit": {
+      "description": "Create Conventional Commits with the gates green",
+      "template": "Review `git status` and `git diff`, then stage only the files that belong to one logical change. Make sure `just check` passes, then create one Conventional Commit per logical change using the conventions in CONTRIBUTING.md. Do not push. Report each commit you created."
+    }
+  },
+  "watcher": {
+    "ignore": [
+      "cache/**",
+      "renders/**",
+      "data/imagery/**",
+      "data/elevation/*.tif",
+      "blender/*.blend"
+    ]
   }
 }

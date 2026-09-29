@@ -19,7 +19,7 @@ blender/              Blender scenes
 docker-mapproxy/      local MapProxy service for the basemaps
 ```
 
-`opencode.json` stays in the project root so OpenCode can find it. `.mcp.json` stays next to it. The two files serve different tool ecosystems. VS Code, Cline, and other MCP clients read `.mcp.json`. OpenCode reads `opencode.json`. Both stay tracked. The Python environment lives in the root `.venv` directory.
+`opencode.json` stays in the project root so OpenCode can find it. `.mcp.json` stays next to it. The two files serve different tool ecosystems. VS Code, Cline, and other MCP clients read `.mcp.json`. OpenCode reads `opencode.json`, which also defines the project slash commands `/verify`, `/check`, `/gates`, and `/commit` plus the shell permission rules. Both stay tracked. The Python environment lives in the root `.venv` directory.
 
 ## Restoring local data after a fresh clone
 

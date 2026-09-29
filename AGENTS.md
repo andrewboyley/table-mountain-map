@@ -38,7 +38,7 @@ The OSM data requires attribution in any published map, render, or export. The C
 
 ## Configuration files
 
-Keep both `.mcp.json` and `opencode.json` in the repository root. They serve different tool ecosystems and both are tracked. Do not remove either one.
+Keep both `.mcp.json` and `opencode.json` in the repository root. They serve different tool ecosystems and both are tracked. Do not remove either one. `opencode.json` also defines the project slash commands `/verify`, `/check`, `/gates`, and `/commit`, plus the shell permission rules for this repository.
 
 ## Commits
 
