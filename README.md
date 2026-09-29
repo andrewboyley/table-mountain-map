@@ -65,7 +65,7 @@ The QGIS project lives at `qgis/table_mountain_3D.qgs` as plain XML. It is a bui
 
 The clip PBF rebuilds byte-identically. The GeoPackage cannot, because GDAL writes a `last_change` timestamp into `gpkg_contents` on every save. The bytes always differ when the data is identical. That is why the GeoPackage is compared by content and geometry, not by checksum.
 
-You can run the same gates with `just`. `just` rebuilds the project and runs the verification gates. `just check` runs every pre-commit hook on all files. `just verify` runs the three verification scripts. The `justfile` lists every recipe.
+You can run the same gates with `just`. `just` rebuilds the project and runs the verification gates. `just check` runs every pre-commit hook on all files. `just verify` builds the contour-DEM intermediates first, then runs the three verification scripts. The `justfile` lists every recipe.
 
 ## Scripts
 

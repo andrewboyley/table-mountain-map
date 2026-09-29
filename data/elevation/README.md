@@ -26,13 +26,13 @@ python scripts/build_contour_dem.py
 
 It uses a fixed 5 m grid aligned outward from the boundary's extent. The contour clip does not extend fully to the west and south sides of `bound`, so the configured inverse-distance search reaches all interior cells. This is controlled extrapolation from the available contours, not new terrain measurement.
 
-The builder refuses to replace an existing final GeoTIFF. Regenerate only when intended:
+The builder is idempotent (safe to run twice). It rebuilds the surface only when the source contours or the boundary mask are newer than the current output. It rebuilds the validation intermediates whenever they are missing or outdated, so validation still works after `cache/` is cleared. Rebuild a current output only on purpose:
 
 ```bash
 python scripts/build_contour_dem.py --overwrite
 ```
 
-Intermediate inputs and diagnostic products live in `cache/contour_dem/`. Both the intermediate data and the final GeoTIFF are ignored by Git because they are reproducible derivatives.
+`just verify` runs this builder before the DEM validation, so the order is handled for you. Intermediate inputs and diagnostic products live in `cache/contour_dem/`. Both the intermediate data and the final GeoTIFF are ignored by Git because they are reproducible derivatives.
 
 ## Overviews after a clean checkout
 

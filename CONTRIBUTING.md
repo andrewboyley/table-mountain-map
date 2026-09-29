@@ -78,7 +78,7 @@ pre-commit run --all-files
 pre-commit run --hook-stage pre-push --all-files
 ```
 
-You can run the same gates with `just`. `just check` runs every pre-commit hook on all files. `just verify` runs `verify_data.py all`, `verify_project.py`, and `verify_contour_dem.py`. Bare `just` rebuilds the project and then runs `verify`. See the `justfile` for the full list.
+You can run the same gates with `just`. `just check` runs every pre-commit hook on all files. `just verify` builds the contour-DEM intermediates first, then runs `verify_data.py all`, `verify_project.py`, and `verify_contour_dem.py`. Bare `just` rebuilds the project and then runs `verify`. See the `justfile` for the full list.
 
 ### Working with pre-commit
 

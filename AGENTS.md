@@ -15,7 +15,7 @@ just verify
 just check
 ```
 
-`just verify` runs the three verification scripts. `just check` runs every pre-commit hook on all files. You can run them without `just`, but `just` is the documented way. The `justfile` lists every recipe.
+`just verify` builds the contour-DEM intermediates first, then runs the three verification scripts. `just check` runs every pre-commit hook on all files. You can run them without `just`, but `just` is the documented way. The `justfile` lists every recipe.
 
 The QGIS project at `qgis/table_mountain_3D.qgs` is a build artifact. Do not hand-edit it. If it drifts, rebuild it with `just build` and commit the byte-identical output.
 
