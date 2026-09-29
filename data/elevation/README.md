@@ -15,7 +15,7 @@ and it must not be described as a surveyed or measured DEM.
 | Output resolution | 5 m × 5 m |
 | Band format | One `Float32` elevation band, metres |
 | NoData | `-9999` |
-| Boundary | `qgis/bound.shp`, using raster pixel-centre inclusion |
+| Boundary | `data/vector/bound/bound.shp`, using raster pixel-centre inclusion |
 | Interpolation | Rasterized contour constraints followed by GDAL inverse-distance NoData fill, no smoothing |
 | Provenance | 2019 City contours derived from the 2019 LiDAR 5 m DEM; height lineage is SA Land Levelling Datum with SAGEOID2010 |
 

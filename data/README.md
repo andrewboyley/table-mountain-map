@@ -107,4 +107,7 @@ full-resolution-only rendering — no source data is lost.
   is the extracted source shapefile retained for provenance.
 - `vector/osm/land_coast_only.gpkg` supplies coastline context.
 - `vector/tiles_grid.gpkg` supplies the map tile grid.
+- `vector/bound/bound.shp` is the DEM boundary mask — the envelope that the
+  contour-derived DEM is aligned and rasterized against (`bound`). It is
+  distinct from the authoritative crop extent above.
 - `vector/tmnp/tmnp.shp` is a retained TMNP vector reference shapefile.

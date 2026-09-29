@@ -33,11 +33,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 PROJECT_CRS = "EPSG:32734"
 
-# The authoritative north-up crop extent. Moved here from qgis/bound.shp,
-# which was a shapefile in the QGIS directory under a name the documentation
-# never used. See design.md decision 3.
+# The authoritative north-up crop extent. What used to be treated as the
+# crop rectangle now lives as the DEM boundary mask at
+# data/vector/bound/bound.shp; reading it as the extent would be a regression
+# to the pre-GeoPackage layout.
 CROP_EXTENT = ROOT / "data/vector/osm/tmnp_extent_north_up.gpkg"
-LEGACY_CROP_EXTENT = ROOT / "qgis/bound.shp"
+LEGACY_CROP_EXTENT = ROOT / "data/vector/bound/bound.shp"
 
 # The park boundary is the declared stable source for the crop extent.
 BOUNDARY = ROOT / "data/vector/osm/tmnp_relation_338191.gpkg"
@@ -186,9 +187,9 @@ def check_crop_extent() -> int:
         return rep.emit()
 
     rep.check(
-        "crop extent is the promoted GeoPackage, not qgis/bound.shp",
+        "crop extent is the promoted GeoPackage, not the boundary mask",
         not using_legacy,
-        "still reading qgis/bound.shp"
+        "still reading data/vector/bound/bound.shp"
         if using_legacy
         else "data/vector/osm/tmnp_extent_north_up.gpkg",
     )

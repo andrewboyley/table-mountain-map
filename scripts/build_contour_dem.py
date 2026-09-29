@@ -20,7 +20,7 @@ from osgeo import gdal, ogr
 ROOT = Path(__file__).resolve().parents[1]
 CONTOURS = ROOT / "data/vector/coct/contours_2m_within_bound.gpkg"
 CONTOUR_LAYER = "contours_2m_within_bound"
-BOUNDARY = ROOT / "qgis/bound.shp"
+BOUNDARY = ROOT / "data/vector/bound/bound.shp"
 OUTPUT = (
     ROOT / "data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif"
 )
