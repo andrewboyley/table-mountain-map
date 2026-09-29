@@ -1,3 +1,3 @@
 # Cache
 
-Temporary files only. Do not put source data, final renders, or the Blender scene here. This directory may be cleared when processing is complete.
+Keep only temporary files here. Do not put source data, final renders, or the Blender scene here. You can clear this directory at any time. Clearing it never breaks the build or the verification gates.

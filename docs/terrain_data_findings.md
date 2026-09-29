@@ -45,11 +45,11 @@ The terrain surface is
 `data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif`,
 a 5 m GDAL inverse-distance interpolation from the COCT 2 m contours, aligned
 to the boundary mask `data/vector/bound/bound.shp`. It is a contour-derived
-elevation surface—not a measured City LiDAR DEM—and its technical validation
+elevation surface, not a measured City LiDAR DEM. Its technical validation
 (`scripts/verify_contour_dem.py`) cannot establish independent grid-cell
 accuracy. The aerial texture used by the 3D terrain is derived from
 `data/imagery/aerial_1m.tif` and `aerial_5m.tif` (permitted COCT WMS
-downloads; see `data/imagery/README.md`). The Blender scene
+downloads, see `data/imagery/README.md`). The Blender scene
 `blender/tmnp.blend` and the `renders/` directory hold the animation work.
 The project-local OpenCode configuration remains at `opencode.json`.
 
