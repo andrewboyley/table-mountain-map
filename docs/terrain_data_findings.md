@@ -30,9 +30,28 @@ The final animation style and the treatment of buildings and trees are not yet s
 
 ## Project state
 
-The QGIS project is stored at `/home/andrew/Projects/table-mountain-pov/qgis/table_mountain_3D.qgs`. It uses `EPSG:32734` for project geometry and contains the permitted OSM context layers plus the offline COCT 2 m contour layer in the `COCT elevation` group. The contour source is in `ESRI:102562` and is reprojected on the fly by QGIS. It is a contour-derived surface, not a continuous measured DTM.
+The QGIS project is `qgis/table_mountain_3D.qgs` (QGIS 4.2.2), rebuilt
+deterministically by `scripts/build_project.py` and verified on every commit
+and push by `scripts/verify_project.py`. It uses `EPSG:32734` and organises
+the layer tree as `Elevation` / `Paths` / `Shapes` / `Basemaps`. The basemaps
+are served from the MapProxy deployment in `docker-mapproxy`: the COCT January
+2026 aerial as a WMS endpoint and OSM as cached XYZ tiles. Four map themes
+(`3D terrain texture`, `Aerial Imagery`, `Trail Inspection`, `Single-part
+trails`) drive the 2D/3D views and the named Trail Atlas layout. See
+`qgis/README.md` for the full inventory and the adopted/declined QGIS
+features.
 
-No raw City DEM, Blender scene, terrain mesh, texture export, or animation exists in the project yet. The project can generate `data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif` headlessly with `scripts/build_contour_dem.py`; it is a 5 m GDAL inverse-distance interpolation from the 2 m contours, with a separate structural and constraint-preservation report from `scripts/verify_contour_dem.py`. It is a contour-derived elevation surface—not a measured City LiDAR DEM—and its technical validation cannot establish independent grid-cell accuracy. The project-local OpenCode configuration remains in `/home/andrew/Projects/table-mountain-pov/opencode.json`.
+The terrain surface is
+`data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif`,
+a 5 m GDAL inverse-distance interpolation from the COCT 2 m contours, aligned
+to the boundary mask `data/vector/bound/bound.shp`. It is a contour-derived
+elevation surface—not a measured City LiDAR DEM—and its technical validation
+(`scripts/verify_contour_dem.py`) cannot establish independent grid-cell
+accuracy. The aerial texture used by the 3D terrain is derived from
+`data/imagery/aerial_1m.tif` and `aerial_5m.tif` (permitted COCT WMS
+downloads; see `data/imagery/README.md`). The Blender scene
+`blender/tmnp.blend` and the `renders/` directory hold the animation work.
+The project-local OpenCode configuration remains at `opencode.json`.
 
 ## Next action
 

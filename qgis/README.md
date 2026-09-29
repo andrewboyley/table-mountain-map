@@ -70,3 +70,43 @@ QT_QPA_PLATFORM=offscreen python3 scripts/build_project.py
   imagery served locally through MapProxy WMS (`coct_aerial`, fetched in
   `EPSG:32734`). Do not publish restricted imagery until the intended
   commercial or non-commercial use is confirmed.
+
+## Native QGIS features per layer
+
+Each layer expresses its rendering and interaction with the native QGIS
+feature that fits it; nothing is emulated by scripts or extra layers.
+
+| Layer / group | Data source | Native feature |
+|---|---|---|
+| Named trails | `../data/vector/osm/tm_hiking_trails_dissolved.gpkg` | Single categorized layer; 2D **and** 3D categorized renderer (QGIS 4.2); subset-string filter macros for isolation and single-part filtering; named styles; map themes |
+| Park boundary | `../data/vector/osm/tmnp_relation_338191.gpkg` | Styled vector layer; clip source for the Processing rebuild model |
+| Crop extent | `../data/vector/osm/tmnp_extent_north_up.gpkg` | Styled layer; textured overlay in the 3D scene |
+| Contours | `../data/vector/coct/contours_2m_within_bound.gpkg` | Styled layer included in themes |
+| Terrain / DEM | `../data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif` | 3D terrain elevation source; theme-driven terrain texture (`map-theme`, `texture-size="512"`); overview sidecars |
+| Basemaps | MapProxy `coct_aerial` WMS (`EPSG:32734`) + OSM XYZ | WMS / XYZ providers with a local cache |
+| Inspection rasters + raw OSM layers | `../data/imagery/…`, `../data/osm/…` | `Trail Inspection` map theme |
+| Per-trail output | coverage layer (`Hiking Trails`) | Print-layout Atlas with coverage-driven pages, data-defined titles, feature scaling |
+| 3D scene | project | Terrain, camera pose (editable in the 4.2 camera dialog), MSAA / bloom / colour grading, categorized 3D line symbols |
+
+## Declined features
+
+Evaluated and deliberately not adopted (no feature used for its own sake),
+each with the reason:
+
+- `.qgz` storage — breaks reviewable diffs; plain `.qgs` XML is the artifact.
+- GeoPackage-embedded styles (`gpkg_style`) — would split the palette truth
+  from `styles/trail_colors.csv`.
+- Virtual layers / embedded-layers list — no aggregate-query need; the data
+  is on disk.
+- Temporal rendering — the scene is static.
+- Vector tiles — offline, version-pinned GeoPackage data is the point; XYZ
+  already serves OSM context.
+- PostgreSQL project storage / project versioning (QGIS 4.0) — git is the
+  version system.
+- Atlas "limit coverage rendering to current feature" (QGIS 4.0) — pages
+  intentionally show surrounding trail context; re-evaluate only if
+  per-page isolation is wanted.
+- Layer notes for provenance — provenance lives in
+  `trail_datasets.manifest.json` and the `data/` READMEs.
+- Skybox-environment lighting (QGIS 4.2) — not Python-bound in 4.2.2; the
+  current bloom / colour-grading / MSAA look suffices.

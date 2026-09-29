@@ -18,7 +18,10 @@ cache/                temporary processing files
 renders/              final images and animation output
 ```
 
-`opencode.json` stays in the project root so OpenCode can discover it. The Python environment is kept in the root `.venv` directory.
+`opencode.json` stays in the project root so OpenCode can discover it. `.mcp.json`
+is kept alongside it: the two files serve different tool ecosystems (VS Code,
+Cline and other MCP clients read `.mcp.json`; OpenCode reads `opencode.json`),
+so both stay tracked. The Python environment is kept in the root `.venv` directory.
 
 ## Restoring local data after a fresh clone
 
@@ -69,6 +72,25 @@ Checks SHA-256 of the pinned raw downloads, feature counts and CRS of every deri
 The QGIS project is stored as plain XML at `qgis/table_mountain_3D.qgs` and is a reproducible build artifact rather than a hand-saved file. `python3 scripts/build_project.py` re-enforces the canonical state — project CRS, the single 172-trail categorized layer (2D and 3D), the map themes, the 3D scene XML, the basemap sources (CoCT aerial as MapProxy WMS in `EPSG:32734`, OSM on cached XYZ), relative paths, and the embedded presentation macro — and writes a byte-identical file across runs. `python3 scripts/verify_project.py` is the pre-commit gate that loads the `.qgs` headlessly and asserts every one of those invariants.
 
 The clip PBF rebuilds **byte-identically**. The GeoPackage does not, and cannot: GDAL writes a `last_change` timestamp into `gpkg_contents` on every save, so the bytes always differ even when the data is identical. That is why the GeoPackage is checked by content and geometry rather than by checksum.
+
+## Scripts
+
+Every tracked script is load-bearing: each either backs a pre-commit/verify
+gate or is a documented data-pipeline step.
+
+| Script | Purpose |
+|---|---|
+| `scripts/build_project.py` | Rebuild `qgis/table_mountain_3D.qgs` headlessly; byte-identical for unchanged inputs |
+| `scripts/verify_project.py` | Pre-commit gate: loads the `.qgs` offscreen and asserts the project invariants |
+| `scripts/verify_data.py` | Pre-push gate and manual `all` sweep: data inventory, documented paths, raster performance, trail outputs |
+| `scripts/build_contour_dem.py` | Build the 5 m contour-derived DEM from the COCT 2 m contours |
+| `scripts/verify_contour_dem.py` | Validate the contour-derived DEM against the source contours and the boundary |
+
+The former texture-pipeline scripts (`build_texture_rasters.py`,
+`apply_terrain_texture.py`) were removed: their input file (formerly
+`aerial.tif`, renamed `aerial_1m.tif`) was superseded months ago and nothing
+referenced their outputs; the provenance is recorded in
+`data/imagery/README.md`.
 
 ## Current data
 
