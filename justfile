@@ -13,9 +13,30 @@ verify-project:
 verify-data subcommand='all':
     python3 scripts/verify_data.py {{ subcommand }}
 
+# Rebuild the trail GeoPackages from the OSM extract
+rebuild-trails:
+    qgis_process run model:trail_rebuild \
+      --ELLIPSOID=EPSG:7030 \
+      --INPUT_PBF=data/osm/table-mountain-bound-extent.osm.pbf \
+      --INPUT_BOUNDARY=data/vector/osm/tmnp_relation_338191.gpkg \
+      --HIGHWAY_VALUES=path,steps,footway \
+      --output_named=data/vector/osm/tm_hiking_trails_named.gpkg \
+      --output_dissolved=data/vector/osm/tm_hiking_trails_dissolved.gpkg \
+      --output_supplement=data/vector/osm/tm_trail_supplement.gpkg
+
 # Rebuild the contour DEM from the boundary mask (skips when up to date)
 build-dem:
     python3 scripts/build_contour_dem.py
+
+# Force a rebuild of a current DEM surface (build-dem skips when up to date)
+build-dem-force:
+    python3 scripts/build_contour_dem.py --overwrite
+
+# Rebuild the DEM overview pyramid and sidecars (never rewrites the raster)
+build-overviews:
+    gdaladdo -ro -r average \
+      data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif \
+      2 4 8 16 32
 
 # Verify the contour DEM bounds against the boundary envelope
 verify-dem: build-dem
@@ -31,6 +52,14 @@ check:
 # Run pre-commit hooks on staged files only
 check-staged:
     pre-commit
+
+# Run the pre-push stage hooks (full data verifier and project gate)
+check-push:
+    pre-commit run --hook-stage pre-push --all-files
+
+# Clear the temporary cache (all contents are regenerable)
+cache-clear:
+    rm -rf cache/*
 
 # Format scripts with ruff (mirrors the ruff-format pre-commit hook)
 format:
