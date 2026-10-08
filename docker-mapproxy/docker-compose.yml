@@ -1,24 +1,75 @@
-volumes:
-   mapproxy_cache_data:
 services:
   mapproxy:
     image: kartoza/mapproxy
+    container_name: mapproxy
     environment:
-      - PRODUCTION=true
+      # uwsgi worker tuning. The image renders its own /settings/uwsgi.ini from
+      # uwsgi.default.ini with envsubst, so these are the supported knobs.
+      # Do not mount a custom uwsgi.ini: the image only ever substitutes
+      # variables into its own default file, and a mounted one is used verbatim,
+      # so any ${VAR} placeholder survives into uwsgi and chdir() fails.
       - PROCESSES=4
       - CHEAPER=2
       - THREADS=10
+      # Run as the unprivileged mapproxy user matching the host user so the
+      # bind mounts stay writable from the host without a second chown.
       - MAPPROXY_USER_ID=1000
       - MAPPROXY_GROUP_ID=1000
+      # One app per yaml in /multi_mapproxy, reachable at /mapproxy/<name>/.
       - MULTI_MAPPROXY=true
       - ALLOW_LISTING=True
+      # File logs under /multi_mapproxy_logs. LOGGING=true also flips the
+      # image's DISABLE_LOGGING to false so uwsgi keeps its own request log.
       - LOGGING=true
+      # Vendor endpoint for the CoCT aerial WMS, referenced from
+      # config/mapproxy.yaml as ${COCT_WMS_HOST} in both the source URL and its
+      # legend URL. MapProxy expands $VAR / ${VAR} in every string in its YAML,
+      # keeping the placeholder verbatim when the variable is unset, so this
+      # has to be set for the aerial layer to work. Kept here rather than
+      # repeated in the two config strings it replaces.
+      - COCT_WMS_HOST=https://cityimg.capetown.gov.za
     volumes:
       # If MULTI_MAPPROXY=true then mount to /multi_mapproxy otherwise mount to /mapproxy
-      - ./mapproxy_configuration:/multi_mapproxy
-      - mapproxy_cache_data:/cache_data
+      - ./config:/multi_mapproxy
+      - ./cache_data:/cache_data
       # Read-only project data used to constrain MapProxy seed jobs.
       - ../data:/seed_data:ro
+      # MapProxy logging config. The image's own generated log config is broken
+      # and sends logs to the container's ephemeral layer; see settings/log.ini.
+      - ./settings/log.ini:/settings/log.ini:ro
+      # Dedicated directory for MapProxy file logs (kept separate from config/).
+      # MapProxy runs as MAPPROXY_USER_ID=1000, so on the host this dir must be
+      # writable by that uid; on first clone it will be created by the user.
+      - ./logs:/multi_mapproxy_logs
+    # container_name already implies this hostname, but set it explicitly because
+    # it is load-bearing: the image's entrypoint embeds $HOSTNAME in the log file
+    # names it creates, and its cleanup_files() never matches them (it single-quotes
+    # the glob, so it stays literal). A stable hostname means a stable pair of
+    # filenames instead of a fresh empty pair on every recreate. Nothing writes to
+    # them; settings/log.ini uses fixed names instead.
+    hostname: mapproxy
+    healthcheck:
+      # Any HTTP response proves uwsgi is serving the MapProxy WSGI app, which
+      # is what this gate is for. A 4xx is deliberately accepted: the app
+      # listing at /mapproxy/ is suppressed when ALLOW_LISTING is false, and the
+      # app name follows the yaml filename, so no fixed URL stays correct across
+      # config changes. A connection or timeout failure is what should fail here.
+      test:
+        - CMD
+        - python3
+        - -c
+        - |
+          import sys, urllib.error, urllib.request
+          try:
+              urllib.request.urlopen("http://localhost:8080/mapproxy/", timeout=4)
+          except urllib.error.HTTPError:
+              pass
+          except Exception:
+              sys.exit(1)
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
   nginx:
     image: nginx
     environment:
@@ -34,6 +85,7 @@ services:
         max-size: 200m
         max-file: '10'
     depends_on:
-      - mapproxy
+      mapproxy:
+        condition: service_healthy
     ports:
     - "80:80"

@@ -8,12 +8,12 @@ Defines where repository artifacts live so that directory names communicate thei
 
 ### Requirement: The QGIS directory holds only project artifacts
 
-The `qgis/` directory SHALL contain only project artifacts — the project file, styles, the presentation macro, the processing model and QGIS documentation — and SHALL NOT contain data layers.
+The `qgis/` directory SHALL contain only project artifacts — the project file, styles, the processing model and QGIS documentation — and SHALL NOT contain data layers.
 
 #### Scenario: No data sources under qgis/
 
 - **WHEN** the `qgis/` directory is listed
-- **THEN** every file is a project artifact (project, styles, macro, model, documentation)
+- **THEN** every file is a project artifact (project, styles, model, documentation)
 - **AND** no shapefile, GeoPackage or raster data source is tracked under `qgis/`
 
 #### Scenario: The boundary lives in the data tree

@@ -4,10 +4,16 @@
 # Rationale: this repo holds a 2.3 GB working set, almost all of it source or
 # derived geospatial binaries. None of it belongs in git history. What IS
 # tracked is the reproducible definition of the project: docs, scripts, the
-# QGIS project, READMEs, and the small boundary layers the project references.
+# QGIS project, the Processing models, and the config files they need.
+# data/ is empty in git: a fresh clone recreates it from the two fetched
+# sources, and REPRODUCTION.md records the whole derivation map.
 #
-# Every ignored path below is regenerable. See docs/ for provenance.
+# Every ignored path below is either downloaded or regenerable. See
+# REPRODUCTION.md for provenance.
 # ---------------------------------------------------------------------------
+*.bck
+data/
+.claude/worktrees
 
 # --- Python environment and tooling ---------------------------------------
 .venv/
@@ -34,48 +40,19 @@ Thumbs.db
 .idea/
 .vscode/
 
-# --- OSM source and extracts ----------------------------------------------
-# Permitted South Africa source extract and the park clip. Regenerate with the
-# osmium command recorded in docs/osm_pbf_inspection.md. OSM data is ODbL and
-# requires attribution; data/README.md carries it and stays tracked.
-data/osm/*.pbf
-data/osm/*.pbf.md5sum
-
-# --- COCT source archives -------------------------------------------------
-# 753 MB original download, retained unchanged on disk but not in git.
-*.zip
-
-# --- Large COCT / derived vector data -------------------------------------
-# ~1 GB 2 m contour shapefile, extracted from the archive above.
-# Excludes the directory CONTENTS, not the directory itself. Git does not
-# descend into a wholly excluded directory, so naming the directory here would
-# make the !**/README.md guard at the bottom of this file ineffective.
-data/vector/coct/ground_level_map_2m_contours/*
-# 420 MB bound-clipped 2 m contours, derived from the shapefile above by
-# reprojecting ESRI:102562 -> EPSG:32734 and clipping to
-# data/vector/bound/bound.shp.
-data/vector/coct/contours_2m_within_bound.gpkg
-
-# --- Generated imagery derivatives ----------------------------------------
-# Orthophoto exports and texture bakes. All large and reproducible; the
-# regeneration command lives in data/imagery/README.md.
-# NOTE: there is no data/terrain/ ignore rule. The COCT WMS "DTM" layers serve a
-# hillshade render, not elevation, so nothing is stored there. Re-add a rule
-# before writing any TIN/DEM product into data/terrain/.
-data/imagery/*
-!data/imagery/README.md
-
-# --- Generated elevation derivatives --------------------------------------
-# Continuous DEMs derived from the COCT contours; regenerate through the
-# QGIS Processing workflow documented in data/elevation/README.md. Raster
-# overview sidecars (.ovr/.aux.xml) and world files (.wld) are regenerable
-# with the gdaladdo command recorded in data/README.md, so they are ignored
-# along with the rasters themselves.
-data/elevation/*.tif
-data/elevation/*.ovr
-data/elevation/*.aux.xml
-data/elevation/*.wld
-!data/elevation/README.md
+# --- data/ ------------------------------------------------------------------
+# Nothing under data/ is tracked. The directory does not exist in a fresh
+# clone: `just fetch-sources` downloads the two upstream sources (the
+# Geofabrik PBF and the COCT contour zip), and every other file in here is
+# derived from them. This includes the private user-held inputs (the Lines of
+# Least Resistance workbook and local notes): they are local files only, never
+# committed. REPRODUCTION.md is the derivation map.
+#
+# Git does not descend into an ignored directory, so this rule also swallows
+# the provenance READMEs that used to sit under data/; their content now
+# lives in REPRODUCTION.md, and the global !**/README.md guard below cannot
+# re-include them (by design).
+data/
 
 # --- Blender scene backups ------------------------------------------------
 # Blender writes a .blend1 auto-backup beside each .blend on every save.
@@ -97,14 +74,51 @@ blender/*.blend1
 *_attachments.zip
 
 # --- Render output --------------------------------------------------------
-# Blender frames and videos.
+# Blender frames and videos; the directory stays present but empty in git.
 renders/*
-!renders/README.md
 
 # --- Caches ---------------------------------------------------------------
+# Temporary files only; safe to clear at any time.
 cache/*
-!cache/README.md
+
+# --- MapProxy runtime output ---------------------------------------------
+# Both rules ignore directory CONTENTS, never the directory itself, so the
+# directory stays tracked and !**/README.md below remains effective.
+
+# Tile cache. One SQLite level database per zoom level, regenerable by
+# `just seed-mapproxy` or on demand. config/mapproxy.yaml is the source of
+# truth for what goes in here.
+docker-mapproxy/cache_data/*
+
+# MapProxy log output. The directory is tracked (via .gitkeep) because Docker
+# creates a missing bind-mount source as root:root, which uid 1000 could not
+# write to. The log files themselves are transient.
+docker-mapproxy/logs/*
+!docker-mapproxy/logs/.gitkeep
+
+# Artifacts the image writes into the config directory on every start. The two
+# yaml files there are the source of truth and stay tracked.
+#   log_*.ini        copy of settings/log.ini, referenced by the generated app.py
+#   default_path.txt records the cache dir between starts
+#   *_mapproxy.log   zero-byte placeholders, see the LOGGING comment in compose
+docker-mapproxy/config/log_*.ini
+docker-mapproxy/config/default_path.txt
+docker-mapproxy/config/*_mapproxy.log
+
+# The demo page rendered by the nginx container. web/index.html.bck is the
+# source of truth: web/nginx_conf.sh runs
+#   envsubst < /web/index.html.bck > /web/index.html
+# on every start, substituting the OWS endpoint built from NGINX_HOST and
+# MULTI_MAPPROXY. The output is container output, is written as root, and is
+# regenerated on each start, so it is not tracked. An earlier commit had
+# captured a rendered copy with a then-current endpoint baked in.
+docker-mapproxy/web/index.html
 
 # --- Keep the provenance READMEs even inside ignored directories ----------
-# Guards against a broad pattern above swallowing a data/README.md.
+# Re-includes READMEs that the broad `dir/*` rules above would swallow
+# (renders/, cache/, docker-mapproxy/). It deliberately cannot reach anything
+# under data/: that directory is ignored as a whole, so data/README.md stays
+# out of git and its content lives in REPRODUCTION.md.
 !**/README.md
+# CocoIndex Code (ccc)
+/.cocoindex_code/

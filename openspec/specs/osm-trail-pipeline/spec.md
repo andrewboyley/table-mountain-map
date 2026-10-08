@@ -106,7 +106,7 @@ filter, the dissolve rule and the output CRS it was produced with.
 
 ### Requirement: Pipeline is runnable from QGIS
 
-The rebuild SHALL be expressible as a QGIS Processing model or project macro,
+The rebuild SHALL be expressible as a QGIS Processing model,
 so it runs from the application rather than only from a shell.
 
 #### Scenario: Model is discoverable in Processing

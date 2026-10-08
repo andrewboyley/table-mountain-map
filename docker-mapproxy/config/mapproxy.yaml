@@ -1,0 +1,131 @@
+services:
+  tms:
+    use_grid_names: true
+    # Serves the /tiles/ endpoint with a north-west origin so that the
+    # {z}/{x}/{y} order matches the OpenStreetMap XYZ convention.
+    origin: nw
+  wms:
+    srs:
+      - 'EPSG:3857'
+      - 'EPSG:4326'
+      - 'EPSG:2048'
+    md:
+      title: MapProxy WMS
+      abstract: Cached map services
+  wmts:
+    restful: true
+
+layers:
+  - name: osm
+    title: OpenStreetMap
+    sources: [osm_cache]
+  - name: coct_aerial
+    title: City of Cape Town Aerial Photography
+    sources: [coct_aerial_cache]
+
+# Tile cache for the OSM raster source. sqlite is the right backend here: it
+# accepts multiple tiles per transaction, so bulk_meta_tiles can store a whole
+# 4x4 meta tile in one write instead of sixteen.
+caches:
+  osm_cache:
+    grids: [webmercator]
+    sources: [osm_source]
+    # Request the whole meta tile from a tile source even when the client asked
+    # for one tile, and store all of it at once. This is the option the sqlite
+    # backend is built for; the file cache cannot benefit from it.
+    bulk_meta_tiles: true
+    cache:
+      type: sqlite
+
+  # Tile cache for the CoCT aerial WMS. Same sqlite backend, two differences:
+  #
+  # JPEG, because the upstream imagery is fully opaque (see req.transparent
+  # below) and PNG-encoding a 256x256 orthophoto costs CPU and disk for no
+  # transparency benefit. The MapProxy docs call this out as the recommended
+  # configuration for aerial caches. Serve transparency from the service
+  # config if a client needs it.
+  #
+  # nearest resampling, which is what the docs recommend for aerial imagery:
+  # cheaper, and it keeps a reprojected orthophoto sharp rather than softening
+  # it.
+  coct_aerial_cache:
+    # webmercator (EPSG:3857) only, shared with osm_cache. It is the grid the
+    # web consumes, so the demo page and any Leaflet client get native tiles
+    # with no reprojection on the way out.
+    #
+    # A client that asks for another SRS is still served: MapProxy reprojects
+    # out of this grid per request. QGIS works in EPSG:2048, so it takes that
+    # path. Measured on a warm cache it costs about 4.5 ms, against 7 ms for a
+    # native 3857 tile, because a single-tile GetMap skips the meta-tile
+    # assembly that a native cache hit goes through. The cost is per request
+    # rather than paid once, which is the trade for a single shared grid.
+    #
+    # The grid's deepest level is z19, which is 0.248 m/px of ground at this
+    # latitude, so it bottoms out at the same 0.25 m/px the previous
+    # EPSG:2048 grid stopped at.
+    grids: [webmercator]
+    sources: [Aerial Imagery_Aerial Imagery 2025Jan_wms]
+    format: image/jpeg
+    image:
+      resampling_method: nearest
+    cache:
+      type: sqlite
+
+sources:
+  osm_source:
+    type: tile
+    # %(z)s/%(x)s/%(y)s keeps the north-west origin used by OSM.
+    # Do not use %(tms_path)s here, it flips y for the TMS service.
+    url: https://tile.openstreetmap.org/%(z)s/%(x)s/%(y)s.png
+    grid: webmercator
+    http:
+      headers:
+        User-Agent: table-mountain-pov-mapproxy/1.0 (local caching proxy)
+
+  Aerial Imagery_Aerial Imagery 2025Jan_wms:
+      coverage:
+        bbox: [18.302887047108346, -34.36050459021832, 19.076093169850484, -33.46920614390545]
+        srs: EPSG:4326
+      req:
+        layers: Aerial Imagery_Aerial Imagery 2025Jan
+        styles: ''
+        transparent: false
+        # The space in "GeoSpatial Datasets" must be percent-encoded. Left
+        # literal, every request to this source dies client-side with
+        # InvalidURL("URL can't contain control characters ... found at least
+        # ' '") before it reaches the server, so the aerial cache never fills.
+        # MapProxy percent-encodes the query parameters it appends but not the
+        # base URL given here, so the fix belongs in this value.
+        #
+        # Note that the service's own GetCapabilities publishes this href with
+        # a literal space, and `mapproxy-util autoconfig` copies it verbatim,
+        # so autoconfig output needs the same correction.
+        #
+        # ${COCT_WMS_HOST} is set in docker-compose.yml. MapProxy expands
+        # ${VAR} in every string in this file and, when the variable is unset,
+        # keeps the placeholder verbatim rather than failing, so an unset value
+        # shows up as a 404 from the vendor host rather than a config error.
+        url: ${COCT_WMS_HOST}/erdas-iws/ogc/wms/GeoSpatial%20Datasets?
+      supported_srs: ['EPSG:32734', 'EPSG:3857', 'EPSG:4148', 'EPSG:4326']
+      type: wms
+      wms_opts:
+        featureinfo: true
+        # Spaces encoded for the same reason as req.url above.
+        legendurl: ${COCT_WMS_HOST}/erdas-iws/erdas/imagex/GeoSpatial%20Datasets?request=image&type=jpg&layers=/Aerial%20Imagery/Aerial%20Imagery%202025Jan_v3.ecw&style=default&sizex=100&sizey=100
+
+grids:
+  # Shared by both caches. Global extent, so it costs nothing until tiles are
+  # actually written under it. The north-west origin matches the OpenStreetMap
+  # tile scheme.
+  webmercator:
+    base: GLOBAL_WEBMERCATOR
+    srs: 'EPSG:3857'
+    origin: nw
+
+globals:
+  cache:
+    base_dir: "/cache_data/mapproxy"
+    # 4x4 meta tiles, 1024x1024 with the 80px default meta_buffer. Smaller
+    # means more upstream requests; larger wastes cache space on areas that
+    # are never viewed as a whole block.
+    meta_size: [4, 4]

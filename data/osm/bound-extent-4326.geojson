@@ -1,7 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "bound_extent",
-"features": [
-{"type":"Feature","properties":{"id":null},"geometry":{"type":"Polygon","coordinates":[[[18.2872556,-34.3593343],[18.5067429,-34.3640048],[18.5205053,-33.8942449],[18.302226,-33.8896556],[18.2872556,-34.3593343]]]}}
-]
-}

@@ -17,16 +17,22 @@ just check
 
 `just verify` builds the contour-DEM intermediates first, then runs the three verification scripts. `just check` runs every pre-commit hook on all files. Use `just` as the single entry point for project commands. The `justfile` lists every recipe.
 
-The QGIS project at `qgis/table_mountain_3D.qgs` is a build artifact. Do not hand-edit it. If it drifts, rebuild it with `just build` and commit the byte-identical output.
+The QGIS project at `qgis/table_mountain_3D.qgs` is hand-edited in QGIS. `scripts/verify_project.py` loads it offscreen and fails on any broken invariant (CRS, layer existence, renderer coverage, relative paths).  There is no separate build step -- the `.qgs` file is the source of truth.  The project embeds no scripts or macros; presentation uses native QGIS features only.
 
 ## Verification scripts
 
-- `scripts/build_project.py` rebuilds `qgis/table_mountain_3D.qgs` headlessly.
-- `scripts/verify_project.py` loads the project offscreen and fails on any broken invariant.
-- `scripts/verify_data.py all` makes sure the data inventory, the documented paths, the raster performance, and the trail outputs are correct.
+- `scripts/verify_project.py` loads the QGIS project offscreen and fails on any broken invariant.
+- `scripts/verify_data.py all` makes sure the data inventory, the documented paths, the raster performance, the trail outputs, and the named-summits outputs are correct.
 - `scripts/build_contour_dem.py` and `scripts/verify_contour_dem.py` build and validate the contour DEM.
+- `scripts/build_peak_manifest.py` writes the named-summits provenance manifest. `just rebuild-peaks` runs it; do not hand-edit the manifest.
 
-`scripts/verify_data.py` scans four README files for path references: `README.md`, `data/README.md`, `renders/README.md`, and `cache/README.md`. Every path you name in those files must resolve in the current tree.
+`scripts/verify_data.py` scans four README files for path references: `README.md`, `data/README.md`, `renders/README.md`, and `cache/README.md`. Every path you name in those files must resolve in the current tree. The scanner treats every backticked token as a path, so do not backtick a bare command name such as `qgis_process` in those four files.
+
+## Processing models
+
+`qgis_process` resolves `model:<name>` from the active QGIS profile's `processing/models` directory, never from the repository. A model in `qgis/processing/` is inert until it is copied into that profile, so `qgis_process run model:trail_rebuild` fails on a fresh clone even though the file is present. `just install-models` does the copy; both `rebuild-trails` and `rebuild-peaks` depend on it. Do not hand-copy, and do not edit the copies in the profile -- edit the repository file and re-run the recipe.
+
+Reading OSM peaks needs `osmium`, not the GDAL OSM driver. That driver drops the `ele` tag from both its field list and `other_tags`, so a peak read through it has no elevation and cannot be filtered on one. Any new pipeline that needs `ele` must read the extract with `osmium` first.
 
 ## Data rules
 

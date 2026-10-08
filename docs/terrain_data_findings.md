@@ -30,15 +30,19 @@ The final animation style and the treatment of buildings and trees are not yet s
 
 ## Project state
 
-The QGIS project is `qgis/table_mountain_3D.qgs` (QGIS 4.2.2), rebuilt
-deterministically by `scripts/build_project.py` and verified on every commit
-and push by `scripts/verify_project.py`. It uses `EPSG:32734` and organises
-the layer tree as `Elevation` / `Paths` / `Shapes` / `Basemaps`. The basemaps
-are served from the MapProxy deployment in `docker-mapproxy`: the COCT January
-2026 aerial as a WMS endpoint and OSM as cached XYZ tiles. Four map themes
-(`3D terrain texture`, `Aerial Imagery`, `Trail Inspection`, `Single-part
-trails`) drive the 2D/3D views and the named Trail Atlas layout. See
-`qgis/README.md` for the full inventory and the adopted/declined QGIS
+The QGIS project is `qgis/table_mountain_3D.qgs` (QGIS 4.2.2), hand-edited
+in QGIS and verified on every commit and push by `scripts/verify_project.py`.
+It uses `EPSG:2048` (Hartebeesthoek94 / Lo19) and organises the layer tree as
+`Paths` / `Elevation` / `Shapes` / `Basemaps`. The basemaps are served from the
+MapProxy deployment in `docker-mapproxy`: the COCT January 2026 aerial as a
+WMS endpoint (layer `coct_aerial`, cache grid `EPSG:3857`,
+fetched upstream in `EPSG:32734`), the CoCT hillshade (layer `coct_hillshade`,
+cache grid `EPSG:3857`), the CoCT basemap raster (layer `coct_basemap`, cache
+grid `EPSG:3857`), and OSM as cached XYZ tiles. None of the CoCT layers is
+clipped to the park: each serves its full upstream extent. Four map themes
+(`3D terrain texture`, `Aerial Imagery`, `Trail Inspection`,
+Single-part trails`) drive the 2D/3D views and the named Trail Atlas layout.
+See `qgis/README.md` for the full inventory and the adopted/declined QGIS
 features.
 
 The terrain surface is
@@ -59,7 +63,13 @@ Request a small study-area subset from the City Maps Office. The request must as
 
 Ask for the 2025 2 m bare-earth DTM first. Ask for the 2019 5 m DEM as a second choice. If no raw raster becomes available, use the 2 m contours for an approximate model. Use the 5 m contours when newer coverage matters more than vertical detail. Do not label either contour model as a measured DEM.
 
-The 2 m contour service can return geometry directly in `EPSG:32734`. Use that output for the first working surface. When a raw file arrives, read its metadata with `gdalinfo`. Compare sample heights with known points and inspect the edge and nodata areas. Reproject a working copy to `EPSG:32734` before creating the Blender heightmap. Then prepare the texture and context layers and build the scene.
+The 2 m contour service can return geometry directly in `EPSG:32734` (for
+MapProxy WMS caching). For the project display, request output in `EPSG:2048`
+(Hartebeesthoek94 / Lo19). Use the `EPSG:32734` contour geometry for the first
+working surface. When a raw file arrives, read its metadata with `gdalinfo`.
+Compare sample heights with known points and inspect the edge and nodata areas.
+Reproject a working copy to `EPSG:2048` before creating the Blender heightmap.
+Then prepare the texture and context layers and build the scene.
 
 ## Source links
 

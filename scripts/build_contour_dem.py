@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Build a 5 m contour-derived DEM without opening QGIS.
 
+TODO: move this pipeline into a QGIS Processing model, like the trail, peak
+and hillshade pipelines in `qgis/processing/`. Until then this script is the
+record of the build.
+
 The raster is a model surface interpolated from the City of Cape Town 2 m
 contours. It is not the City's original LiDAR DEM and must never be described
 as surveyed or measured raster elevation data.

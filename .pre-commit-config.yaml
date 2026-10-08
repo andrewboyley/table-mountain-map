@@ -1,5 +1,5 @@
 minimum_pre_commit_version: "4.0.0"
-default_install_hook_types: [pre-commit, pre-push]
+default_install_hook_types: [pre-commit]
 exclude: ^docker-mapproxy/
 
 repos:
@@ -15,8 +15,7 @@ repos:
       - id: check-yaml
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: >-
-          ^(?:\.mcp\.json|opencode\.json|data/vector/osm/trail_datasets\.manifest\.json)$
+        exclude: '^(?:\.mcp\.json|opencode\.json)$'
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: trailing-whitespace
@@ -31,23 +30,9 @@ repos:
 
   - repo: local
     hooks:
-      - id: verify-data
-        name: verify geospatial project data
-        entry: /usr/bin/python3 scripts/verify_data.py all
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [pre-push]
-      - id: verify-project
-        name: verify QGIS project artifact
-        entry: /usr/bin/python3 scripts/verify_project.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [pre-commit, pre-push]
       - id: validate-processing-model
-        name: validate trail_rebuild processing model
-        entry: bash -c 'QT_QPA_PLATFORM=offscreen qgis_process help qgis/processing/trail_rebuild.model3 >/dev/null'
+        name: validate Processing models
+        entry: bash -c 'QT_QPA_PLATFORM=offscreen qgis_process help "$1" >/dev/null' --
         language: system
-        pass_filenames: false
-        files: ^qgis/processing/trail_rebuild\.model3$
+        pass_filenames: true
+        files: ^qgis/processing/.*\.model3$

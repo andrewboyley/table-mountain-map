@@ -1,0 +1,145 @@
+# ---------------------------------------
+# MapProxy seeding configuration.
+# ---------------------------------------
+#
+# Two coverages, two passes per cache:
+#
+#   land_coast_only   the land mask, 538.4 km2, seeded to z14
+#   table_mountain_np the park inside it, 249.9 km2, seeded to z19
+#
+# So the park carries the finest detail the grid can express, and the rest of
+# the land stops at z14. The park is verified to lie wholly inside the mask, so
+# the park's own low levels come from the land pass and its deep levels from the
+# park pass: a tile inside the park ends up with z0-19, complete.
+#
+# Land only, because that is where both upstreams have anything to return. The
+# general coverage used to be a bounding box, and 92% of the CoCT aerial's
+# upstream extent is open ocean, so most of what it asked for was blank. A mask
+# means the seeder never walks water.
+#
+# Level choice.
+#
+# Webmercator has no fixed ground resolution; it depends on latitude. Over the
+# park, cos(34.13 deg) = 0.8283:
+#
+#   z14 7.91 m/px   z17 0.99 m/px   z18 0.49 m/px   z19 0.25 m/px
+#
+# z19 is the grid's deepest level and the park takes all of it, so nothing finer
+# is reachable. The land stops at z14, 7.9 m/px, which is a context level: it
+# carries coastline, main roads and the urban footprint, and leaves the budget
+# for the park.
+#
+# The two passes split at z14/z15 and their level ranges are disjoint, so no tile
+# is requested twice. The land pass covers the whole mask including the park,
+# rather than excluding the park, because the park still needs z0-14 and the
+# difference would save nothing: only 208 of the land pass's 265 tiles are also
+# park tiles, all at cheap low levels.
+#
+# Counted offline against the grid: 265 tiles for the land pass and 89,309 for
+# the park pass, so 89,574 per cache and 179,148 across both. About 2804 MB with
+# sqlite overhead, which is 56% of the 5 GB ceiling for cache_data:
+#
+#   osm_cache          1291 MB
+#   coct_aerial_cache  1513 MB
+#
+# The park pass is 99.7% of that, and 65,729 of its 89,309 tiles are z19 alone.
+# The cache is overwhelmingly spent on the finest level, in the finest area.
+#
+# Note that nothing enforces the ceiling. The seed config bounds what is
+# pre-fetched, but MapProxy has no cache size limit of its own, so on-demand
+# requests from the demo page or QGIS grow the cache past it as well.
+#
+# Both caches use that one webmercator grid, so the same level numbers apply to
+# the osm and aerial tasks and the Leaflet zoom levels below are the levels the
+# seeder actually writes. A client asking for any other SRS, QGIS included, is
+# served by reprojecting out of this grid rather than from a grid of its own.
+#
+# Every task carries refresh_before. Without it mapproxy-seed sets refresh_all
+# (mapproxy/seed/config.py:211-216) and re-requests every tile in the level
+# range, which would re-download the deep on-demand tiles already in the cache.
+# Uncached tiles are still seeded; only cached ones older than this are
+# re-fetched. Raise the age to force a refresh.
+#
+# This puts real load on the CoCT WMS and on tile.openstreetmap.org: 179,148
+# requests, most of them against a public WMS serving restricted imagery. Keep
+# the concurrency in the just recipe modest.
+
+seeds:
+  # ------------------------------------------------------------------ context
+  # z0-14 over the whole land mask, for the osm cache. Same coverage and same
+  # levels as the aerial's context pass; only the cache differs.
+  #
+  # The webmercator grid is global, so these tasks MUST carry a coverage:
+  # without one the seeder would walk the whole world at every level, and z14
+  # alone is 268 million tiles.
+  #
+  # Counted offline against the grid with shapely: 265 tiles, of which 168 are
+  # z14. The mask is 12 parts, so the count follows the real coastline and not a
+  # box around it.
+  osm_land_context:
+    caches: [osm_cache]
+    grids: [webmercator]
+    coverages: [land_coast_only]
+    levels:
+      from: 0
+      to: 14
+    refresh_before: {days: 3650}
+
+  coct_aerial_land_context:
+    caches: [coct_aerial_cache]
+    grids: [webmercator]
+    coverages: [land_coast_only]
+    levels:
+      from: 0
+      to: 14
+    refresh_before: {days: 3650}
+
+  # ------------------------------------------------------------------- detail
+  # z15-19 over the park, the highest resolution the grid has, for the osm
+  # cache. Clipped to the boundary rather than its bounding box, so the tiles
+  # follow the real outline of the park.
+  #
+  # Counted offline: 89,309 tiles, being 405 at z15, 1,323 at z16, 4,669 at z17,
+  # 17,183 at z18 and 65,729 at z19. The park polygon is 249.9 km2, a third of
+  # the area its bounding box encloses, because the boundary is a narrow chain.
+  # Tile counts follow the geometry, not the bbox.
+  osm_tmnp_detail:
+    caches: [osm_cache]
+    grids: [webmercator]
+    coverages: [table_mountain_np]
+    levels:
+      from: 15
+      to: 19
+    refresh_before: {days: 3650}
+
+  coct_aerial_tmnp_detail:
+    caches: [coct_aerial_cache]
+    grids: [webmercator]
+    coverages: [table_mountain_np]
+    levels:
+      from: 15
+      to: 19
+    refresh_before: {days: 3650}
+
+coverages:
+  # The context area, and the source of the general extent for both caches
+  # rather than one box each. The land mask from
+  # data/vector/osm/land_coast_only.gpkg: 12 parts, 538.4 km2. It is a polygon
+  # rather than a box so the seeder never walks water.
+  #
+  # It is worth knowing this mask is an OSM extract of the Table Mountain area,
+  # 19.3 by 51.6 km, not a whole-metro land cover. Anything outside that
+  # footprint, including the Cape Flats and Hout Bay, is not seeded. Tiles there
+  # still serve, on demand, because nothing in the source config clips serving
+  # to this shape; it is only the pre-seeding walk that is bounded by it.
+  land_coast_only:
+    datasource: /seed_data/vector/osm/land_coast_only.gpkg
+    srs: 'EPSG:32734'
+
+  # The fine area, and the highest fidelity in the project. The national park
+  # relation: 6 parts, 249.9 km2. Checked against the mask above, it is entirely
+  # inside it, so seeding it cannot put a tile down over water, the intersection
+  # is not needed, and its z0-14 levels are already covered by the land pass.
+  table_mountain_np:
+    datasource: /seed_data/vector/osm/tmnp_relation_338191.gpkg
+    srs: 'EPSG:32734'

@@ -1,0 +1,6 @@
+Kept so git tracks this directory.
+Without it a fresh clone has no ./logs, and Docker creates a missing
+bind-mount source as root:root 0755. MapProxy runs as MAPPROXY_USER_ID=1000
+and could not create its log files there, so fileConfig would fail at start.
+The directory itself is the only thing that needs to exist and be owned by
+the host user; the log files inside it are ignored.
