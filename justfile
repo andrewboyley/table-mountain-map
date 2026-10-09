@@ -10,10 +10,7 @@ QGIS_MODEL_DIR := `ls -d "$HOME"/.local/share/QGIS/QGIS*/profiles/default/proces
 # Copy the repo's Processing models into the active QGIS profile (idempotent)
 install-models:
     @test -n "{{QGIS_MODEL_DIR}}" || { echo "no QGIS profile models directory found; is QGIS installed?" >&2; exit 1; }
-    install -D -m 0644 qgis/processing/peak_extract.model3 "{{QGIS_MODEL_DIR}}/peak_extract.model3"
-    install -D -m 0644 qgis/processing/trail_official.model3 "{{QGIS_MODEL_DIR}}/trail_official.model3"
-    install -D -m 0644 qgis/processing/hillshade_classes.model3 "{{QGIS_MODEL_DIR}}/hillshade_classes.model3"
-    install -D -m 0644 qgis/processing/trail_rebuild.model3 "{{QGIS_MODEL_DIR}}/trail_rebuild.model3"
+    for model in qgis/processing/*.model3; do install -D -m 0644 "$model" "{{QGIS_MODEL_DIR}}/$(basename "$model")"; done
     @echo "installed into {{QGIS_MODEL_DIR}}"
 
 # Fetch the two upstream source files into data/ (Geofabrik PBF, COCT 2 m
@@ -22,8 +19,32 @@ install-models:
 fetch-sources *args:
     python3 scripts/fetch_sources.py {{ args }}
 
+# Clip the rolling South Africa extract to the fixed Table Mountain extent.
+prepare-osm:
+    mkdir -p data/osm
+    osmium extract --strategy complete_ways \
+      -b 18.30722,-34.35834,18.4979771,-33.9117846 \
+      data/osm/south-africa-latest.osm.pbf -O \
+      -o data/osm/table-mountain-bound-extent.osm.pbf
+
+# Derive the OSM park relation and its north-up crop extent.
+prepare-boundary: prepare-osm install-models
+    mkdir -p data/vector/osm
+    QT_QPA_PLATFORM=offscreen qgis_process run model:boundary_extract \
+      '--INPUT_PBF=data/osm/table-mountain-bound-extent.osm.pbf|layername=multipolygons' \
+      --boundary_geopackage=data/vector/osm/tmnp_relation_338191.gpkg \
+      --northup_extent_geopackage=data/vector/osm/tmnp_extent_north_up.gpkg
+
+# Reproject and clip the user-supplied CoCT contour Shapefile to TMNP.
+prepare-contours: prepare-boundary
+    mkdir -p data/vector/coct
+    QT_QPA_PLATFORM=offscreen qgis_process run model:contour_prepare \
+      --INPUT_CONTOURS=data/vector/coct/ground_level_map_2m_contours/Ground_Level_Map_2m_Contours.shp \
+      --INPUT_BOUNDARY=data/vector/osm/tmnp_relation_338191.gpkg \
+      --prepared_contours_geopackage=data/vector/coct/contours_2m_within_bound.gpkg
+
 # Rebuild the trail GeoPackages from the OSM extract
-rebuild-trails: install-models
+rebuild-trails: prepare-boundary
     qgis_process run model:trail_rebuild \
       --ELLIPSOID=EPSG:7030 \
       --INPUT_PBF=data/osm/table-mountain-bound-extent.osm.pbf \
@@ -38,7 +59,8 @@ rebuild-trails: install-models
 # driver drops the `ele` tag from both its field list and other_tags, so peaks
 # read through it arrive with no elevation. The cache/ intermediates are
 # regenerable and gitignored; the model applies the name+ele filter.
-rebuild-peaks: install-models
+rebuild-peaks: prepare-osm install-models
+    mkdir -p cache data/vector/osm
     osmium tags-filter data/osm/table-mountain-bound-extent.osm.pbf \
       n/natural=peak -O -o cache/peaks.osm.pbf
     osmium export cache/peaks.osm.pbf --add-unique-id=type_id -f geojson \
@@ -81,7 +103,7 @@ rebuild-peaks: install-models
 # PyQt6 virtual call. QGIS overwrites GDAL_SKIP with an empty string at
 # startup, so there is no environment variable that works around it:
 #   sudo pacman -S podofo mariadb-libs
-hillshade-classes: install-models
+hillshade-classes: build-dem
     mkdir -p data/vector/terrain
     qgis_process run model:hillshade_classes \
       --INPUT=data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif \
@@ -108,19 +130,24 @@ rebuild-trails-official: rebuild-trails
       '--INPUT_NAMED=data/vector/osm/tm_hiking_trails_named.gpkg|layername=hiking_trails_named' \
       --output_official=data/vector/osm/tm_hiking_trails_official.gpkg
 
-# Rebuild the contour DEM from the boundary mask (skips when up to date)
-build-dem:
-    python3 scripts/build_contour_dem.py
-
-# Force a rebuild of a current DEM surface (build-dem skips when up to date)
-build-dem-force:
-    python3 scripts/build_contour_dem.py --overwrite
+# Rebuild the contour-derived 5 m DEM through the QGIS Processing model.
+build-dem: prepare-contours
+    mkdir -p data/elevation
+    QT_QPA_PLATFORM=offscreen qgis_process run model:contour_dem \
+      '--INPUT_CONTOURS=data/vector/coct/contours_2m_within_bound.gpkg|layername=contours_2m_within_bound' \
+      --INPUT_BOUNDARY=data/vector/osm/tmnp_relation_338191.gpkg \
+      --ELEVATION_FIELD=ELVT \
+      --CELL_SIZE=5 \
+      --FILL_DISTANCE=11000
 
 # Rebuild the DEM overview pyramid and sidecars (never rewrites the raster)
 build-overviews:
     gdaladdo -ro -r average \
       data/elevation/table_mountain_contours_2m_interpolated_5m_within_bound.tif \
       2 4 8 16 32
+
+# Recreate all GIS vector and terrain outputs from the two local sources.
+rebuild-all: prepare-osm prepare-boundary prepare-contours build-dem build-overviews rebuild-trails rebuild-peaks rebuild-trails-official hillshade-classes
 
 # Run all pre-commit hooks across every file
 check:
@@ -212,9 +239,9 @@ lint:
 lint-fix:
     ruff check --fix scripts/
 
-# Validate the trail_rebuild Processing model headlessly
+# Validate every checked-in Processing model headlessly. This does not require data.
 model-validate:
-    QT_QPA_PLATFORM=offscreen qgis_process help qgis/processing/trail_rebuild.model3
+    for model in qgis/processing/*.model3; do QT_QPA_PLATFORM=offscreen qgis_process help "$model" >/dev/null; done
 
 # Bump pinned pre-commit hook revisions; review the diff before committing
 hooks-update:

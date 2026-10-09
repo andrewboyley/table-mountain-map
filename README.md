@@ -14,16 +14,24 @@ sudo apt install gdal-bin osmium-tool
 conda install -c conda-forge gdal osmium
 ```
 
-### The one manual data source
+## Source data and rebuild
 
-The COCT 2 m contour archive is 753 MB and is not in git. Get it from the [City of Cape Town Open Data Portal](https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::city-of-cape-town-ground-level-map-2m-contours-cct-glm-2019) and save it as `data/vector/coct/GLM_2m_-1536768105596229130.zip`. Then run the checksum command:
+`data/` is never tracked. Its only upstream inputs are fetched by:
 
 ```bash
-echo adf09db8b963e6814eae2aec63240bf870d31bfcaade46d8db96f50f65c3f880 \
-  data/vector/coct/GLM_2m_-1536768105596229130.zip | sha256sum -c -
+just fetch-sources
 ```
 
-If the portal is unreachable, request the dataset from `city.maps@capetown.gov.za`.
+- Geofabrik's rolling South Africa OSM PBF: `data/osm/south-africa-latest.osm.pbf` (verified against Geofabrik's MD5 sidecar).
+- City of Cape Town's 2 m contour archive: `data/vector/coct/GLM_2m_*.zip`. The archive is a source file, not a build product. Unzip it into `data/vector/coct/ground_level_map_2m_contours/` before rebuilding; `Ground_Level_Map_2m_Contours.shp` and its `.dbf`, `.shx`, `.prj`, and `.cpg` sidecars are required.
+
+The OSM file intentionally changes with Geofabrik's `-latest` release. Rebuild provenance therefore describes the supplied download; it does not claim byte-identical output across releases.
+
+```bash
+just rebuild-all
+```
+
+This produces ignored OSM clips, park boundary and north-up extent, prepared contours, contour-derived DEM and overviews, trails, named peaks, official trails, and hillshade classes. It does not fetch restricted aerial imagery, seed MapProxy, or create renders.
 
 ## Model crop extent
 

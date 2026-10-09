@@ -5,11 +5,9 @@
 # derived geospatial binaries. None of it belongs in git history. What IS
 # tracked is the reproducible definition of the project: docs, scripts, the
 # QGIS project, the Processing models, and the config files they need.
-# data/ is empty in git: a fresh clone recreates it from the two fetched
-# sources, and REPRODUCTION.md records the whole derivation map.
-#
-# Every ignored path below is either downloaded or regenerable. See
-# REPRODUCTION.md for provenance.
+# data/ is empty in git: `just fetch-sources` downloads the OSM PBF and
+# contour archive, then `just rebuild-all` creates every GIS derivative.
+# Every ignored path below is either source data held locally or regenerable.
 # ---------------------------------------------------------------------------
 *.bck
 data/
@@ -41,17 +39,14 @@ Thumbs.db
 .vscode/
 
 # --- data/ ------------------------------------------------------------------
-# Nothing under data/ is tracked. The directory does not exist in a fresh
-# clone: `just fetch-sources` downloads the two upstream sources (the
-# Geofabrik PBF and the COCT contour zip), and every other file in here is
-# derived from them. This includes the private user-held inputs (the Lines of
-# Least Resistance workbook and local notes): they are local files only, never
-# committed. REPRODUCTION.md is the derivation map.
+# Nothing under data/ is tracked. `just fetch-sources` downloads the Geofabrik
+# PBF and CoCT contour ZIP. Unzip the contour archive before `just rebuild-all`;
+# the Shapefile set and every generated GeoPackage, raster, overview, diagnostic,
+# and provenance file remain local. Private audit inputs and local notes are
+# local-only too.
 #
-# Git does not descend into an ignored directory, so this rule also swallows
-# the provenance READMEs that used to sit under data/; their content now
-# lives in REPRODUCTION.md, and the global !**/README.md guard below cannot
-# re-include them (by design).
+# Git does not descend into an ignored directory, so data README files are local
+# documentation and cannot be re-included by the global !**/README.md guard.
 data/
 
 # --- Blender scene backups ------------------------------------------------

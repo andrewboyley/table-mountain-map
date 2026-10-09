@@ -7,11 +7,10 @@ data/ is empty in git, so a fresh clone begins with `just fetch-sources`:
      Verified against Geofabrik's published .md5 sidecar. `-latest` rolls
      forward about weekly, so the hash is not pinned here.
 
-  2. City of Cape Town 2 m contours -> data/vector/coct/<portal name>.zip
+  2. City of Cape Town 2 m contours -> data/vector/coct/GLM_2m_contours.zip
      Asked for from the COCT ArcGIS Hub site, which answers with a resultUrl
-     for its cached export. The SHA-256 of the archive this project was built
-     from is printed for comparison; a mismatch just means the portal
-     regenerated the export.
+     for its cached export. The portal does not publish a checksum. This script
+     verifies the downloaded ZIP structure and reports its SHA-256.
 
 Standard library only: no GDAL, no QGIS.
 """
@@ -23,6 +22,7 @@ import json
 import sys
 import time
 import urllib.request
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,50 +35,88 @@ COCT_API = (
     f"{COCT_ITEM}/shapefile?redirect=false&layers=1"
 )
 COCT_DIR = ROOT / "data/vector/coct"
-# SHA-256 of the export the contours in this repo were derived from.
-COCT_SHA256 = "adf09db8b963e6814eae2aec63240bf870d31bfcaade46d8db96f50f65c3f880"
+COCT_PATH = COCT_DIR / "GLM_2m_contours.zip"
 
 UA = {"User-Agent": "table-mountain-pov fetch-sources"}
 
 
-def download(url: str, dest: Path) -> tuple[str, str]:
-    """Stream url into dest (via a .part file). Return (md5, sha256)."""
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    part = dest.with_name(dest.name + ".part")
+def digest(path: Path) -> tuple[str, str]:
+    """Return MD5 and SHA-256 for path."""
     md5, sha = hashlib.md5(), hashlib.sha256()
-    request = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(request, timeout=120) as response:
-        total = int(response.headers.get("Content-Length") or 0)
-        with part.open("wb") as out:
-            done = 0
-            while chunk := response.read(1 << 20):
-                out.write(chunk)
-                md5.update(chunk)
-                sha.update(chunk)
-                done += len(chunk)
-                if total and done % (100 << 20) == 0:
-                    print(f"    {done >> 20} / {total >> 20} MiB", flush=True)
-    part.replace(dest)
+    with path.open("rb") as source:
+        while chunk := source.read(1 << 20):
+            md5.update(chunk)
+            sha.update(chunk)
     return md5.hexdigest(), sha.hexdigest()
 
 
+def download(url: str, dest: Path) -> tuple[str, str]:
+    """Stream url into a temporary file. Return its MD5 and SHA-256."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    part = dest.with_name(dest.name + ".part")
+    part.unlink(missing_ok=True)
+    request = urllib.request.Request(url, headers=UA)
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response:
+            total = int(response.headers.get("Content-Length") or 0)
+            with part.open("wb") as out:
+                done = 0
+                while chunk := response.read(1 << 20):
+                    out.write(chunk)
+                    done += len(chunk)
+                    if total and done % (100 << 20) == 0:
+                        print(f"    {done >> 20} / {total >> 20} MiB", flush=True)
+        return digest(part)
+    except BaseException:
+        part.unlink(missing_ok=True)
+        raise
+
+
+def accept_download(part: Path, dest: Path) -> None:
+    """Atomically replace dest with validated part."""
+    part.replace(dest)
+
+
+def geofabrik_md5() -> str:
+    """Return the current Geofabrik MD5 sidecar value."""
+    with urllib.request.urlopen(PBF_URL + ".md5", timeout=60) as response:
+        return response.read().decode().split()[0]
+
+
 def fetch_pbf() -> None:
+    expected = geofabrik_md5()
     if PBF_PATH.exists():
-        print(f"pbf: already present, {PBF_PATH.relative_to(ROOT)}")
-        return
+        md5, _ = digest(PBF_PATH)
+        if md5 == expected:
+            print(f"pbf: verified existing {PBF_PATH.relative_to(ROOT)}")
+            return
+        PBF_PATH.unlink()
+        print("pbf: discarded file with stale or invalid checksum")
+
     print("pbf: downloading south-africa-latest.osm.pbf")
     md5, _ = download(PBF_URL, PBF_PATH)
-    with urllib.request.urlopen(PBF_URL + ".md5", timeout=60) as response:
-        expected = response.read().decode().split()[0]
+    part = PBF_PATH.with_name(PBF_PATH.name + ".part")
     if md5 != expected:
+        part.unlink(missing_ok=True)
         sys.exit(f"pbf: md5 {md5} does not match Geofabrik sidecar {expected}")
+    accept_download(part, PBF_PATH)
     print(f"pbf: md5 {md5} matches the Geofabrik sidecar")
 
 
+def validate_coct_archive(path: Path) -> None:
+    """Fail when path is not a readable ZIP archive."""
+    if not zipfile.is_zipfile(path):
+        sys.exit(f"coct: {path.name} is not a ZIP archive")
+    with zipfile.ZipFile(path) as archive:
+        if archive.testzip() is not None:
+            sys.exit(f"coct: {path.name} has a corrupt member")
+
+
 def fetch_coct() -> None:
-    existing = sorted(COCT_DIR.glob("GLM_2m_*.zip"))
-    if existing:
-        print(f"coct: already present, {existing[0].relative_to(ROOT)}")
+    if COCT_PATH.exists():
+        validate_coct_archive(COCT_PATH)
+        _, sha = digest(COCT_PATH)
+        print(f"coct: verified existing {COCT_PATH.relative_to(ROOT)} (sha256 {sha})")
         return
 
     request = urllib.request.Request(COCT_API, headers=UA)
@@ -96,16 +134,12 @@ def fetch_coct() -> None:
     if not result_url:
         sys.exit("coct: export still not ready after 10 minutes")
 
-    dest = COCT_DIR / result_url.rsplit("/", 1)[-1]
-    print(f"coct: downloading {dest.name}")
-    _, sha = download(result_url, dest)
-    if sha == COCT_SHA256:
-        print(f"coct: sha256 {sha} matches the recorded archive")
-    else:
-        print(f"coct: sha256 {sha} (recorded archive: {COCT_SHA256})")
-        print(
-            "coct: differs from the recorded archive; the portal may have regenerated it"
-        )
+    print(f"coct: downloading {COCT_PATH.name}")
+    _, sha = download(result_url, COCT_PATH)
+    part = COCT_PATH.with_name(COCT_PATH.name + ".part")
+    validate_coct_archive(part)
+    accept_download(part, COCT_PATH)
+    print(f"coct: sha256 {sha}")
 
 
 def main() -> None:

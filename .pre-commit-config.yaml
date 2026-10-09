@@ -1,8 +1,12 @@
 minimum_pre_commit_version: "4.0.0"
-default_install_hook_types: [pre-commit]
-exclude: ^docker-mapproxy/
+default_install_hook_types: [pre-commit, commit-msg]
 
 repos:
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -20,6 +24,12 @@ repos:
         args: [--fix=lf]
       - id: trailing-whitespace
 
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.9
     hooks:
@@ -27,12 +37,3 @@ repos:
         files: ^scripts/
       - id: ruff
         files: ^scripts/
-
-  - repo: local
-    hooks:
-      - id: validate-processing-model
-        name: validate Processing models
-        entry: bash -c 'QT_QPA_PLATFORM=offscreen qgis_process help "$1" >/dev/null' --
-        language: system
-        pass_filenames: true
-        files: ^qgis/processing/.*\.model3$

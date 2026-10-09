@@ -16,10 +16,13 @@ This runs at commit and push time as the `verify-project` pre-commit hook. It ex
 
 ## Processing models
 
-Four models are checked in here:
+Seven models are checked in here. `boundary_extract`, `contour_prepare`, and `contour_dem` turn the two downloaded sources into the project-local boundary, crop extent, contour working layer, and terrain surface; the other models derive presentation data from those outputs:
 
 | Model | Produces | Rebuild command |
 |---|---|---|
+| `boundary_extract.model3` | TMNP relation 338191 and north-up extent | `just prepare-boundary` |
+| `contour_prepare.model3` | clipped 2 m contours with `ELVT` | `just prepare-contours` |
+| `contour_dem.model3` | 5 m contour-derived DEM | `just build-dem` |
 | `trail_rebuild.model3` | the three trail GeoPackages | `just rebuild-trails` |
 | `trail_official.model3` | `tm_hiking_trails_official.gpkg` | `just rebuild-trails-official` |
 | `peak_extract.model3` | `tm_peaks_named_with_ele.gpkg` (layer `summits`) | `just rebuild-peaks` |
