@@ -1,255 +1,255 @@
-<!DOCTYPE model>
+<?xml version='1.0' encoding='utf-8'?>
 <Option type="Map">
   <Option name="children" type="Map">
     <Option name="clip" type="Map">
-      <Option name="active" type="bool" value="true"/>
-      <Option name="alg_config"/>
-      <Option name="alg_id" type="QString" value="native:clip"/>
-      <Option name="color" type="QString" value=""/>
+      <Option name="active" type="bool" value="true" />
+      <Option name="alg_config" />
+      <Option name="alg_id" type="QString" value="native:clip" />
+      <Option name="color" type="QString" value="" />
       <Option name="comment" type="Map">
-        <Option name="color" type="QString" value=""/>
-        <Option name="component_description" type="QString" value=""/>
-        <Option name="component_height" type="double" value="60"/>
-        <Option name="component_pos_x" type="double" value="0"/>
-        <Option name="component_pos_y" type="double" value="0"/>
-        <Option name="component_width" type="double" value="100"/>
-        <Option name="outputs_collapsed" type="bool" value="false"/>
-        <Option name="parameters_collapsed" type="bool" value="false"/>
+        <Option name="color" type="QString" value="" />
+        <Option name="component_description" type="QString" value="" />
+        <Option name="component_height" type="double" value="60" />
+        <Option name="component_pos_x" type="double" value="0" />
+        <Option name="component_pos_y" type="double" value="0" />
+        <Option name="component_width" type="double" value="100" />
+        <Option name="outputs_collapsed" type="bool" value="false" />
+        <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value="Clip contours to TMNP boundary"/>
-      <Option name="component_height" type="double" value="30"/>
-      <Option name="component_pos_x" type="double" value="0"/>
-      <Option name="component_pos_y" type="double" value="0"/>
-      <Option name="component_width" type="double" value="200"/>
-      <Option name="dependencies"/>
-      <Option name="id" type="QString" value="clip"/>
+      <Option name="component_description" type="QString" value="Clip contours to TMNP boundary" />
+      <Option name="component_height" type="double" value="30" />
+      <Option name="component_pos_x" type="double" value="0" />
+      <Option name="component_pos_y" type="double" value="0" />
+      <Option name="component_width" type="double" value="200" />
+      <Option name="dependencies" />
+      <Option name="id" type="QString" value="clip" />
       <Option name="outputs" type="Map">
         <Option name="prepared_contours" type="Map">
-          <Option name="child_id" type="QString" value="clip"/>
-          <Option name="color" type="QString" value=""/>
+          <Option name="child_id" type="QString" value="clip" />
+          <Option name="color" type="QString" value="" />
           <Option name="comment" type="Map">
-            <Option name="color" type="QString" value=""/>
-            <Option name="component_description" type="QString" value=""/>
-            <Option name="component_height" type="double" value="60"/>
-            <Option name="component_pos_x" type="double" value="0"/>
-            <Option name="component_pos_y" type="double" value="0"/>
-            <Option name="component_width" type="double" value="100"/>
-            <Option name="outputs_collapsed" type="bool" value="false"/>
-            <Option name="parameters_collapsed" type="bool" value="false"/>
+            <Option name="color" type="QString" value="" />
+            <Option name="component_description" type="QString" value="" />
+            <Option name="component_height" type="double" value="60" />
+            <Option name="component_pos_x" type="double" value="0" />
+            <Option name="component_pos_y" type="double" value="0" />
+            <Option name="component_width" type="double" value="100" />
+            <Option name="outputs_collapsed" type="bool" value="false" />
+            <Option name="parameters_collapsed" type="bool" value="false" />
           </Option>
-          <Option name="component_description" type="QString" value="Prepared contours GeoPackage"/>
-          <Option name="component_height" type="double" value="30"/>
-          <Option name="component_pos_x" type="double" value="0"/>
-          <Option name="component_pos_y" type="double" value="0"/>
-          <Option name="component_width" type="double" value="200"/>
-          <Option name="default_value" type="invalid"/>
-          <Option name="mandatory" type="bool" value="false"/>
-          <Option name="name" type="QString" value="prepared_contours"/>
-          <Option name="output_name" type="QString" value="OUTPUT"/>
-          <Option name="outputs_collapsed" type="bool" value="false"/>
-          <Option name="parameters_collapsed" type="bool" value="false"/>
+          <Option name="component_description" type="QString" value="Prepared contours GeoPackage" />
+          <Option name="component_height" type="double" value="30" />
+          <Option name="component_pos_x" type="double" value="0" />
+          <Option name="component_pos_y" type="double" value="0" />
+          <Option name="component_width" type="double" value="200" />
+          <Option name="default_value" type="invalid" />
+          <Option name="mandatory" type="bool" value="false" />
+          <Option name="name" type="QString" value="prepared_contours" />
+          <Option name="output_name" type="QString" value="OUTPUT" />
+          <Option name="outputs_collapsed" type="bool" value="false" />
+          <Option name="parameters_collapsed" type="bool" value="false" />
         </Option>
       </Option>
-      <Option name="outputs_collapsed" type="bool" value="false"/>
-      <Option name="parameters_collapsed" type="bool" value="false"/>
+      <Option name="outputs_collapsed" type="bool" value="false" />
+      <Option name="parameters_collapsed" type="bool" value="false" />
       <Option name="params" type="Map">
         <Option name="INPUT" type="List">
           <Option type="Map">
-            <Option name="child_id" type="QString" value="reproject"/>
-            <Option name="output_name" type="QString" value="OUTPUT"/>
-            <Option name="source" type="int" value="1"/>
+            <Option name="child_id" type="QString" value="reproject" />
+            <Option name="output_name" type="QString" value="OUTPUT" />
+            <Option name="source" type="int" value="1" />
           </Option>
         </Option>
         <Option name="OUTPUT" type="List">
           <Option type="Map">
-            <Option name="parameter_name" type="QString" value="OUTPUT_CONTOURS"/>
-            <Option name="source" type="int" value="0"/>
+            <Option name="parameter_name" type="QString" value="OUTPUT_CONTOURS" />
+            <Option name="source" type="int" value="0" />
           </Option>
         </Option>
         <Option name="OVERLAY" type="List">
           <Option type="Map">
-            <Option name="parameter_name" type="QString" value="INPUT_BOUNDARY"/>
-            <Option name="source" type="int" value="0"/>
+            <Option name="parameter_name" type="QString" value="INPUT_BOUNDARY" />
+            <Option name="source" type="int" value="0" />
           </Option>
         </Option>
       </Option>
     </Option>
     <Option name="reproject" type="Map">
-      <Option name="active" type="bool" value="true"/>
-      <Option name="alg_config"/>
-      <Option name="alg_id" type="QString" value="native:reprojectlayer"/>
-      <Option name="color" type="QString" value=""/>
+      <Option name="active" type="bool" value="true" />
+      <Option name="alg_config" />
+      <Option name="alg_id" type="QString" value="native:reprojectlayer" />
+      <Option name="color" type="QString" value="" />
       <Option name="comment" type="Map">
-        <Option name="color" type="QString" value=""/>
-        <Option name="component_description" type="QString" value=""/>
-        <Option name="component_height" type="double" value="60"/>
-        <Option name="component_pos_x" type="double" value="0"/>
-        <Option name="component_pos_y" type="double" value="0"/>
-        <Option name="component_width" type="double" value="100"/>
-        <Option name="outputs_collapsed" type="bool" value="false"/>
-        <Option name="parameters_collapsed" type="bool" value="false"/>
+        <Option name="color" type="QString" value="" />
+        <Option name="component_description" type="QString" value="" />
+        <Option name="component_height" type="double" value="60" />
+        <Option name="component_pos_x" type="double" value="0" />
+        <Option name="component_pos_y" type="double" value="0" />
+        <Option name="component_width" type="double" value="100" />
+        <Option name="outputs_collapsed" type="bool" value="false" />
+        <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value="Reproject contours to EPSG:32734"/>
-      <Option name="component_height" type="double" value="30"/>
-      <Option name="component_pos_x" type="double" value="0"/>
-      <Option name="component_pos_y" type="double" value="0"/>
-      <Option name="component_width" type="double" value="200"/>
-      <Option name="dependencies"/>
-      <Option name="id" type="QString" value="reproject"/>
-      <Option name="outputs"/>
-      <Option name="outputs_collapsed" type="bool" value="false"/>
-      <Option name="parameters_collapsed" type="bool" value="false"/>
+      <Option name="component_description" type="QString" value="Reproject contours to EPSG:2048" />
+      <Option name="component_height" type="double" value="30" />
+      <Option name="component_pos_x" type="double" value="0" />
+      <Option name="component_pos_y" type="double" value="0" />
+      <Option name="component_width" type="double" value="200" />
+      <Option name="dependencies" />
+      <Option name="id" type="QString" value="reproject" />
+      <Option name="outputs" />
+      <Option name="outputs_collapsed" type="bool" value="false" />
+      <Option name="parameters_collapsed" type="bool" value="false" />
       <Option name="params" type="Map">
         <Option name="CONVERT_CURVED_GEOMETRIES" type="List">
           <Option type="Map">
-            <Option name="source" type="int" value="2"/>
-            <Option name="static_value" type="bool" value="false"/>
+            <Option name="source" type="int" value="2" />
+            <Option name="static_value" type="bool" value="false" />
           </Option>
         </Option>
         <Option name="INPUT" type="List">
           <Option type="Map">
-            <Option name="parameter_name" type="QString" value="INPUT_CONTOURS"/>
-            <Option name="source" type="int" value="0"/>
+            <Option name="parameter_name" type="QString" value="INPUT_CONTOURS" />
+            <Option name="source" type="int" value="0" />
           </Option>
         </Option>
         <Option name="OUTPUT" type="List">
           <Option type="Map">
-            <Option name="source" type="int" value="2"/>
-            <Option name="static_value" type="QString" value="memory:contours_32734"/>
+            <Option name="source" type="int" value="2" />
+            <Option name="static_value" type="QString" value="memory:contours_32734" />
           </Option>
         </Option>
         <Option name="TARGET_CRS" type="List">
           <Option type="Map">
-            <Option name="source" type="int" value="2"/>
-            <Option name="static_value" type="QString" value="EPSG:32734"/>
+            <Option name="source" type="int" value="2" />
+            <Option name="static_value" type="QString" value="EPSG:32734" />
           </Option>
         </Option>
         <Option name="TRANSFORM_Z" type="List">
           <Option type="Map">
-            <Option name="source" type="int" value="2"/>
-            <Option name="static_value" type="bool" value="false"/>
+            <Option name="source" type="int" value="2" />
+            <Option name="static_value" type="bool" value="false" />
           </Option>
         </Option>
       </Option>
     </Option>
   </Option>
-  <Option name="designerParameterValues"/>
-  <Option name="groupBoxes"/>
+  <Option name="designerParameterValues" />
+  <Option name="groupBoxes" />
   <Option name="help" type="Map">
-    <Option name="ALG_DESC" type="QString" value="Reproject the supplied CoCT 2 m contour Shapefile to EPSG:32734 and clip it to the generated TMNP boundary. The ELVT attribute is preserved."/>
+    <Option name="ALG_DESC" type="QString" value="Reproject the supplied CoCT 2 m contour Shapefile to EPSG:2048 and clip it to the generated TMNP boundary. The ELVT attribute is preserved." />
   </Option>
-  <Option name="internal_version" type="QString" value="Version2"/>
-  <Option name="modelVariables"/>
-  <Option name="model_group" type="QString" value="Source preparation"/>
-  <Option name="model_name" type="QString" value="contour_prepare"/>
-  <Option name="outputGroup" type="QString" value=""/>
-  <Option name="outputOrder"/>
+  <Option name="internal_version" type="QString" value="Version2" />
+  <Option name="modelVariables" />
+  <Option name="model_group" type="QString" value="Source preparation" />
+  <Option name="model_name" type="QString" value="contour_prepare" />
+  <Option name="outputGroup" type="QString" value="" />
+  <Option name="outputOrder" />
   <Option name="parameterDefinitions" type="Map">
     <Option name="INPUT_BOUNDARY" type="Map">
-      <Option name="data_types"/>
-      <Option name="default" type="invalid"/>
-      <Option name="defaultGui" type="invalid"/>
-      <Option name="description" type="QString" value="TMNP boundary polygon"/>
-      <Option name="flags" type="int" value="0"/>
-      <Option name="help" type="QString" value=""/>
-      <Option name="metadata"/>
-      <Option name="name" type="QString" value="INPUT_BOUNDARY"/>
-      <Option name="parameter_type" type="QString" value="vector"/>
+      <Option name="data_types" />
+      <Option name="default" type="invalid" />
+      <Option name="defaultGui" type="invalid" />
+      <Option name="description" type="QString" value="TMNP boundary polygon" />
+      <Option name="flags" type="int" value="0" />
+      <Option name="help" type="QString" value="" />
+      <Option name="metadata" />
+      <Option name="name" type="QString" value="INPUT_BOUNDARY" />
+      <Option name="parameter_type" type="QString" value="vector" />
     </Option>
     <Option name="INPUT_CONTOURS" type="Map">
-      <Option name="data_types"/>
-      <Option name="default" type="invalid"/>
-      <Option name="defaultGui" type="invalid"/>
-      <Option name="description" type="QString" value="Unzipped CoCT 2 m contour Shapefile"/>
-      <Option name="flags" type="int" value="0"/>
-      <Option name="help" type="QString" value=""/>
-      <Option name="metadata"/>
-      <Option name="name" type="QString" value="INPUT_CONTOURS"/>
-      <Option name="parameter_type" type="QString" value="vector"/>
+      <Option name="data_types" />
+      <Option name="default" type="invalid" />
+      <Option name="defaultGui" type="invalid" />
+      <Option name="description" type="QString" value="Unzipped CoCT 2 m contour Shapefile" />
+      <Option name="flags" type="int" value="0" />
+      <Option name="help" type="QString" value="" />
+      <Option name="metadata" />
+      <Option name="name" type="QString" value="INPUT_CONTOURS" />
+      <Option name="parameter_type" type="QString" value="vector" />
     </Option>
     <Option name="prepared_contours_geopackage" type="Map">
-      <Option name="create_by_default" type="bool" value="true"/>
-      <Option name="data_type" type="int" value="-1"/>
-      <Option name="default" type="invalid"/>
-      <Option name="defaultGui" type="invalid"/>
-      <Option name="description" type="QString" value="Prepared contours GeoPackage"/>
-      <Option name="flags" type="int" value="0"/>
-      <Option name="help" type="QString" value=""/>
+      <Option name="create_by_default" type="bool" value="true" />
+      <Option name="data_type" type="int" value="-1" />
+      <Option name="default" type="invalid" />
+      <Option name="defaultGui" type="invalid" />
+      <Option name="description" type="QString" value="Prepared contours GeoPackage" />
+      <Option name="flags" type="int" value="0" />
+      <Option name="help" type="QString" value="" />
       <Option name="metadata" type="Map">
-        <Option name="_modelChildId" type="QString" value="clip"/>
-        <Option name="_modelChildOutputName" type="QString" value="prepared_contours"/>
-        <Option name="_modelChildProvider" type="QString" value="native"/>
+        <Option name="_modelChildId" type="QString" value="clip" />
+        <Option name="_modelChildOutputName" type="QString" value="prepared_contours" />
+        <Option name="_modelChildProvider" type="QString" value="native" />
       </Option>
-      <Option name="name" type="QString" value="prepared_contours_geopackage"/>
-      <Option name="parameter_type" type="QString" value="sink"/>
-      <Option name="supports_append" type="bool" value="false"/>
-      <Option name="supports_non_file_outputs" type="bool" value="true"/>
+      <Option name="name" type="QString" value="prepared_contours_geopackage" />
+      <Option name="parameter_type" type="QString" value="sink" />
+      <Option name="supports_append" type="bool" value="false" />
+      <Option name="supports_non_file_outputs" type="bool" value="true" />
     </Option>
   </Option>
-  <Option name="parameterOrder"/>
+  <Option name="parameterOrder" />
   <Option name="parameters" type="Map">
     <Option name="INPUT_BOUNDARY" type="Map">
-      <Option name="color" type="QString" value=""/>
+      <Option name="color" type="QString" value="" />
       <Option name="comment" type="Map">
-        <Option name="color" type="QString" value=""/>
-        <Option name="component_description" type="QString" value=""/>
-        <Option name="component_height" type="double" value="60"/>
-        <Option name="component_pos_x" type="double" value="0"/>
-        <Option name="component_pos_y" type="double" value="0"/>
-        <Option name="component_width" type="double" value="100"/>
-        <Option name="outputs_collapsed" type="bool" value="false"/>
-        <Option name="parameters_collapsed" type="bool" value="false"/>
+        <Option name="color" type="QString" value="" />
+        <Option name="component_description" type="QString" value="" />
+        <Option name="component_height" type="double" value="60" />
+        <Option name="component_pos_x" type="double" value="0" />
+        <Option name="component_pos_y" type="double" value="0" />
+        <Option name="component_width" type="double" value="100" />
+        <Option name="outputs_collapsed" type="bool" value="false" />
+        <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value=""/>
-      <Option name="component_height" type="double" value="30"/>
-      <Option name="component_pos_x" type="double" value="0"/>
-      <Option name="component_pos_y" type="double" value="0"/>
-      <Option name="component_width" type="double" value="200"/>
-      <Option name="name" type="QString" value="INPUT_BOUNDARY"/>
-      <Option name="outputs_collapsed" type="bool" value="false"/>
-      <Option name="parameters_collapsed" type="bool" value="false"/>
+      <Option name="component_description" type="QString" value="" />
+      <Option name="component_height" type="double" value="30" />
+      <Option name="component_pos_x" type="double" value="0" />
+      <Option name="component_pos_y" type="double" value="0" />
+      <Option name="component_width" type="double" value="200" />
+      <Option name="name" type="QString" value="INPUT_BOUNDARY" />
+      <Option name="outputs_collapsed" type="bool" value="false" />
+      <Option name="parameters_collapsed" type="bool" value="false" />
     </Option>
     <Option name="INPUT_CONTOURS" type="Map">
-      <Option name="color" type="QString" value=""/>
+      <Option name="color" type="QString" value="" />
       <Option name="comment" type="Map">
-        <Option name="color" type="QString" value=""/>
-        <Option name="component_description" type="QString" value=""/>
-        <Option name="component_height" type="double" value="60"/>
-        <Option name="component_pos_x" type="double" value="0"/>
-        <Option name="component_pos_y" type="double" value="0"/>
-        <Option name="component_width" type="double" value="100"/>
-        <Option name="outputs_collapsed" type="bool" value="false"/>
-        <Option name="parameters_collapsed" type="bool" value="false"/>
+        <Option name="color" type="QString" value="" />
+        <Option name="component_description" type="QString" value="" />
+        <Option name="component_height" type="double" value="60" />
+        <Option name="component_pos_x" type="double" value="0" />
+        <Option name="component_pos_y" type="double" value="0" />
+        <Option name="component_width" type="double" value="100" />
+        <Option name="outputs_collapsed" type="bool" value="false" />
+        <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value=""/>
-      <Option name="component_height" type="double" value="30"/>
-      <Option name="component_pos_x" type="double" value="0"/>
-      <Option name="component_pos_y" type="double" value="0"/>
-      <Option name="component_width" type="double" value="200"/>
-      <Option name="name" type="QString" value="INPUT_CONTOURS"/>
-      <Option name="outputs_collapsed" type="bool" value="false"/>
-      <Option name="parameters_collapsed" type="bool" value="false"/>
+      <Option name="component_description" type="QString" value="" />
+      <Option name="component_height" type="double" value="30" />
+      <Option name="component_pos_x" type="double" value="0" />
+      <Option name="component_pos_y" type="double" value="0" />
+      <Option name="component_width" type="double" value="200" />
+      <Option name="name" type="QString" value="INPUT_CONTOURS" />
+      <Option name="outputs_collapsed" type="bool" value="false" />
+      <Option name="parameters_collapsed" type="bool" value="false" />
     </Option>
     <Option name="OUTPUT_CONTOURS" type="Map">
-      <Option name="color" type="QString" value=""/>
+      <Option name="color" type="QString" value="" />
       <Option name="comment" type="Map">
-        <Option name="color" type="QString" value=""/>
-        <Option name="component_description" type="QString" value=""/>
-        <Option name="component_height" type="double" value="60"/>
-        <Option name="component_pos_x" type="double" value="0"/>
-        <Option name="component_pos_y" type="double" value="0"/>
-        <Option name="component_width" type="double" value="100"/>
-        <Option name="outputs_collapsed" type="bool" value="false"/>
-        <Option name="parameters_collapsed" type="bool" value="false"/>
+        <Option name="color" type="QString" value="" />
+        <Option name="component_description" type="QString" value="" />
+        <Option name="component_height" type="double" value="60" />
+        <Option name="component_pos_x" type="double" value="0" />
+        <Option name="component_pos_y" type="double" value="0" />
+        <Option name="component_width" type="double" value="100" />
+        <Option name="outputs_collapsed" type="bool" value="false" />
+        <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value=""/>
-      <Option name="component_height" type="double" value="30"/>
-      <Option name="component_pos_x" type="double" value="0"/>
-      <Option name="component_pos_y" type="double" value="0"/>
-      <Option name="component_width" type="double" value="200"/>
-      <Option name="name" type="QString" value="OUTPUT_CONTOURS"/>
-      <Option name="outputs_collapsed" type="bool" value="false"/>
-      <Option name="parameters_collapsed" type="bool" value="false"/>
+      <Option name="component_description" type="QString" value="" />
+      <Option name="component_height" type="double" value="30" />
+      <Option name="component_pos_x" type="double" value="0" />
+      <Option name="component_pos_y" type="double" value="0" />
+      <Option name="component_width" type="double" value="200" />
+      <Option name="name" type="QString" value="OUTPUT_CONTOURS" />
+      <Option name="outputs_collapsed" type="bool" value="false" />
+      <Option name="parameters_collapsed" type="bool" value="false" />
     </Option>
   </Option>
 </Option>
