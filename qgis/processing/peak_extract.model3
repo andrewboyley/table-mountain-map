@@ -298,7 +298,7 @@
         <Option name="outputs_collapsed" type="bool" value="false" />
         <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value="Reproject to EPSG:2048" />
+      <Option name="component_description" type="QString" value="Reproject to EPSG:32734" />
       <Option name="component_height" type="double" value="30" />
       <Option name="component_pos_x" type="double" value="800" />
       <Option name="component_pos_y" type="double" value="50" />
@@ -384,7 +384,7 @@
     </Option>
   </Option>
   <Option name="help" type="Map">
-    <Option name="ALG_DESC" type="QString" value="Build the named-summits dataset from an OSM peak extract. Keep only natural=peak features that carry both a non-blank name and a non-blank ele, reproject to EPSG:2048, sort by osm_id so the output is deterministic regardless of input order, and write a single GeoPackage whose layer is named summits. Read the input with osmium rather than the GDAL OSM driver: that driver silently drops the ele tag from both its field list and other_tags, so peaks read through it arrive with no elevation." />
+    <Option name="ALG_DESC" type="QString" value="Build the named-summits dataset from an OSM peak extract. Keep only natural=peak features that carry both a non-blank name and a non-blank ele, reproject to EPSG:32734, sort by osm_id so the output is deterministic regardless of input order, and write a single GeoPackage whose layer is named summits. Read the input with osmium rather than the GDAL OSM driver: that driver silently drops the ele tag from both its field list and other_tags, so peaks read through it arrive with no elevation." />
   </Option>
   <Option name="internal_version" type="QString" value="Version2" />
   <Option name="modelVariables" />

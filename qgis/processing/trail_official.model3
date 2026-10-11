@@ -134,7 +134,7 @@
         <Option name="outputs_collapsed" type="bool" value="false"/>
         <Option name="parameters_collapsed" type="bool" value="false"/>
       </Option>
-      <Option name="component_description" type="QString" value="Keep only allowlisted official OSM names"/>
+      <Option name="component_description" type="QString" value="Keep only Riaan Vorster workbook names with exact OSM matches"/>
       <Option name="component_height" type="double" value="30"/>
       <Option name="component_pos_x" type="double" value="300"/>
       <Option name="component_pos_y" type="double" value="50"/>
@@ -148,7 +148,7 @@
         <Option name="EXPRESSION" type="List">
           <Option type="Map">
             <Option name="source" type="int" value="2"/>
-            <Option name="static_value" type="QString" value="&quot;name&quot; IN (&#x27;Cape Point&#x27;, &#x27;Cape of Good Hope&#x27;, &#x27;Cecilia Ridge&#x27;, &#x27;Contour Path&#x27;, &#x27;Disa Gorge&#x27;, &#x27;Echo Valley&#x27;, &#x27;Elephant&#x27;&#x27;s Eye Trail&#x27;, &#x27;Hoerikwaggo Trail&#x27;, &#x27;India Venster&#x27;, &#x27;Karbonkelberg Traverse&#x27;, &#x27;Kasteelspoort Path&#x27;, &#x27;Kloof Corner&#x27;, &#x27;Lighthouse Keeper&#x27;&#x27;s Trail&#x27;, &#x27;Lions Head Path&#x27;, &#x27;Newlands Ravine&#x27;, &#x27;Nursery Ravine&#x27;, &#x27;Orange Kloof Trail&#x27;, &#x27;Pipe Track&#x27;, &#x27;Platteklip Gorge&#x27;, &#x27;Rooikrans Trail&#x27;, &#x27;Shipwreck Trail&#x27;, &#x27;Shortcut to Elephants Eye&#x27;, &#x27;Skeleton Gorge / Smuts Track&#x27;, &#x27;Smuts&#x27;&#x27; Track&#x27;, &#x27;Suther Peak&#x27;, &#x27;Twelve Apostles Path&#x27;, &#x27;Yellowwood Trail / Smuts Track&#x27;)"/>
+            <Option name="static_value" type="QString" value="&quot;name&quot; IN (&#x27;Left Face B&#x27;, &#x27;Platteklip Gorge&#x27;, &#x27;Kloof Corner&#x27;, &#x27;Silverstream Ravine&#x27;, &#x27;Ledges&#x27;, &#x27;India Venster&#x27;, &#x27;Cairn Ravine&#x27;, &#x27;Grotto Ravine&#x27;, &#x27;Blinkwater Ravine&#x27;, &#x27;Llandudno Buttress&#x27;, &#x27;Blind Gully&#x27;, &#x27;Porcupine Ravine&#x27;, &#x27;Corridor Ravine&#x27;, &#x27;Victoria Ravine&#x27;, &#x27;Grove Walk&#x27;, &#x27;Myburgh&#x27;&#x27;s Waterfall Ravine&#x27;, &#x27;Intake Ravine&#x27;, &#x27;Frustration Buttress&#x27;, &#x27;Constantia Corner&#x27;, &#x27;Cecilia Ridge&#x27;, &#x27;Nursery Ravine&#x27;, &#x27;Nursery Buttress&#x27;, &#x27;Ferny Dell&#x27;)"/>
           </Option>
         </Option>
         <Option name="INPUT" type="List">

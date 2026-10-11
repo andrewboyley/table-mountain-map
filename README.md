@@ -49,19 +49,19 @@ We follow the practices outlined in _The Turing Way_ (https://book.the-turing-wa
 
 ## Model crop extent
 
-`TMNP crop extent (north-up)` is the authoritative model crop layer. It is the axis-aligned envelope of the whole park boundary in `EPSG:2048`, derived from OSM relation 338191 and stored in `data/vector/osm/tmnp_extent_north_up.gpkg`.
+`TMNP crop extent (north-up)` is the authoritative model crop layer. It is the axis-aligned envelope of the whole park boundary in `EPSG:32734`, derived from OSM relation 338191 and stored in `data/vector/osm/tmnp_extent_north_up.gpkg`.
 
 | Property | Value |
 |---|---|
 | East–west × north–south | 18,479.41 m × 49,372.55 m |
 | Area | 912.3755 km² |
-| CRS | `EPSG:2048` |
+| CRS | `EPSG:32734` |
 
 The envelope is north-up and contains every boundary vertex. Existing imagery and elevation rasters are retained as supersets. They are not re-cropped.
 
 ## Working rules
 
-- Use `EPSG:2048` for final geometry and physical scale.
+- Use `EPSG:32734` for final geometry and physical scale.
 - Keep OSM attribution with any published map, render, or export.
 - Treat rendered WMS images as visual references, not measured elevation rasters.
 - Do not use restricted City imagery until the intended commercial or non-commercial use is confirmed.

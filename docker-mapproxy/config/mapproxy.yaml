@@ -8,7 +8,7 @@ services:
     srs:
       - 'EPSG:3857'
       - 'EPSG:4326'
-      - 'EPSG:2048'
+      - 'EPSG:32734'
     md:
       title: MapProxy WMS
       abstract: Cached map services
@@ -23,17 +23,14 @@ layers:
     title: City of Cape Town Aerial Photography
     sources: [coct_aerial_cache]
 
-# Tile cache for the OSM raster source. sqlite is the right backend here: it
-# accepts multiple tiles per transaction, so bulk_meta_tiles can store a whole
-# 4x4 meta tile in one write instead of sixteen.
+# Tile cache for the OSM raster source. sqlite keeps every tile for a zoom in a
+# single .mbtiles file, so the cache survives restarts and is easy to inspect.
+# bulk_meta_tiles stays off: MapProxy 7.0.0 raises
+# `TypeError: unhashable type: 'Tile'` on the sqlite backend when it is set.
 caches:
   osm_cache:
     grids: [webmercator]
     sources: [osm_source]
-    # Request the whole meta tile from a tile source even when the client asked
-    # for one tile, and store all of it at once. This is the option the sqlite
-    # backend is built for; the file cache cannot benefit from it.
-    bulk_meta_tiles: true
     cache:
       type: sqlite
 
@@ -54,15 +51,15 @@ caches:
     # with no reprojection on the way out.
     #
     # A client that asks for another SRS is still served: MapProxy reprojects
-    # out of this grid per request. QGIS works in EPSG:2048, so it takes that
+    # out of this grid per request. QGIS works in EPSG:32734, so it takes that
     # path. Measured on a warm cache it costs about 4.5 ms, against 7 ms for a
     # native 3857 tile, because a single-tile GetMap skips the meta-tile
     # assembly that a native cache hit goes through. The cost is per request
     # rather than paid once, which is the trade for a single shared grid.
     #
     # The grid's deepest level is z19, which is 0.248 m/px of ground at this
-    # latitude, so it bottoms out at the same 0.25 m/px the previous
-    # EPSG:2048 grid stopped at.
+    # latitude, so it bottoms out at about the same 0.25 m/px the deepest level
+    # of the earlier grid provided.
     grids: [webmercator]
     sources: [Aerial Imagery_Aerial Imagery 2025Jan_wms]
     format: image/jpeg

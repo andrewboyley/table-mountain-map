@@ -6,7 +6,7 @@ Defines how the project consumes the local MapProxy: cached OpenStreetMap tiles
 over XYZ and the City of Cape Town GeoSpatial Datasets imagery and hillshade
 over WMS. Every cache is stored on the webmercator grid (`EPSG:3857`), the one
 grid the web clients speak, so those clients are served natively. The QGIS
-project CRS is `EPSG:2048` (Hartebeesthoek94 / Lo19) and is not cached, so QGIS
+project CRS is `EPSG:32734` (WGS 84 / UTM zone 34S) and is not cached, so QGIS
 reads through a per-request reprojection out of the webmercator grid. The
 upstream CoCT erdas WMS serves real imagery only in `EPSG:32734`; MapProxy
 fetches upstream in `EPSG:32734` and reprojects to `EPSG:3857` for caching.
@@ -16,14 +16,14 @@ fetches upstream in `EPSG:32734` and reprojects to `EPSG:3857` for caching.
 ### Requirement: CoCT aerial is served as WMS in the project CRS
 
 The CoCT aerial imagery SHALL be loadable in the QGIS project from the
-MapProxy WMS service in `EPSG:2048` (the project CRS) and SHALL render real
+MapProxy WMS service in `EPSG:32734` (the project CRS) and SHALL render real
 imagery, not blank tiles. MapProxy fetches the upstream erdas WMS in its native
 `EPSG:32734`, reprojects to the cached `EPSG:3857` grid, and reprojects again
-on the way out to the `EPSG:2048` the project asks for.
+on the way out to the `EPSG:32734` the project asks for.
 
 #### Scenario: WMS GetMap returns imagery
 
-- **WHEN** a WMS `GetMap` request for layer `coct_aerial` in `EPSG:2048` is
+- **WHEN** a WMS `GetMap` request for layer `coct_aerial` in `EPSG:32734` is
   made against the local MapProxy
 - **THEN** the response contains non-white imagery for areas over land
 
@@ -46,9 +46,8 @@ on the way out to the `EPSG:2048` the project asks for.
 
 The CoCT 2 m hillshade SHALL be served from the local MapProxy WMS service so
 it can be overlaid on the aerial layer for terrain context.
-The upstream layer does not support the project CRS `EPSG:2048`, so it is
-cached on the webmercator grid and QGIS reprojects to the project CRS on the
-fly.
+The layer is cached on the shared webmercator grid, and QGIS reprojects to the
+project CRS (`EPSG:32734`) on the fly.
 
 #### Scenario: Hillshade WMS GetMap returns imagery
 
@@ -66,8 +65,8 @@ fly.
 
 The CoCT basemap raster (`Backdrops_Basemap_Raster`) SHALL be served from the
 local MapProxy WMS service so it can be toggled on in the QGIS project as a
-streetmap-style backdrop. The upstream layer does not support the project CRS
-`EPSG:2048`, so it is cached on the webmercator grid and QGIS reprojects on the fly.
+streetmap-style backdrop. It is cached on the shared webmercator grid, and QGIS
+reprojects to the project CRS (`EPSG:32734`) on the fly.
 
 #### Scenario: Basemap raster WMS GetMap returns imagery
 
@@ -102,7 +101,7 @@ not the reason to prefer it, but the single shared grid is.
 
 #### Scenario: QGIS still reads real imagery
 
-- **WHEN** a WMS `GetMap` request for layer `coct_aerial` in `EPSG:2048` is made
+- **WHEN** a WMS `GetMap` request for layer `coct_aerial` in `EPSG:32734` is made
 - **THEN** the response contains non-white imagery for areas over land
 
 ### Requirement: WMS layers are not clipped to the park

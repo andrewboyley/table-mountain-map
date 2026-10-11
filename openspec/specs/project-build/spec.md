@@ -24,7 +24,7 @@ invariants, exiting non-zero when any check fails.
 #### Scenario: Gate asserts the structural contract
 
 - **WHEN** the verification command runs against a healthy project
-- **THEN** it confirms the project CRS (`EPSG:2048`), relative paths, single
+- **THEN** it confirms the project CRS (`EPSG:32734`), relative paths, single
   categorized trail layer with palette-complete categories, the 3D renderer,
   and that all local layer sources resolve
 

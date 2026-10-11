@@ -93,7 +93,7 @@
         <Option name="outputs_collapsed" type="bool" value="false" />
         <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value="Mask interpolated DEM to TMNP boundary" />
+      <Option name="component_description" type="QString" value="Mask interpolated DEM to land/coast mask" />
       <Option name="component_height" type="double" value="30" />
       <Option name="component_pos_x" type="double" value="0" />
       <Option name="component_pos_y" type="double" value="0" />
@@ -396,7 +396,7 @@
   <Option name="designerParameterValues" />
   <Option name="groupBoxes" />
   <Option name="help" type="Map">
-    <Option name="ALG_DESC" type="QString" value="Build a 5 m EPSG:2048 contour-derived DEM: rasterize ELVT contours, inverse-distance fill NoData, mask to TMNP, and restore contour cells exactly." />
+    <Option name="ALG_DESC" type="QString" value="Build a 5 m EPSG:32734 contour-derived DEM: rasterize ELVT contours, inverse-distance fill NoData, mask to land, and restore contour cells exactly." />
   </Option>
   <Option name="internal_version" type="QString" value="Version2" />
   <Option name="modelVariables" />
@@ -449,7 +449,7 @@
       <Option name="data_types" />
       <Option name="default" type="invalid" />
       <Option name="defaultGui" type="invalid" />
-      <Option name="description" type="QString" value="TMNP boundary polygon" />
+      <Option name="description" type="QString" value="Land/coast mask polygon" />
       <Option name="flags" type="int" value="0" />
       <Option name="help" type="QString" value="" />
       <Option name="metadata" />

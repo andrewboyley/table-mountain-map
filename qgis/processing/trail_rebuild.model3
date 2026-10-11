@@ -450,7 +450,7 @@
         <Option name="outputs_collapsed" type="bool" value="false" />
         <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value="Reproject to EPSG:2048" />
+      <Option name="component_description" type="QString" value="Reproject to EPSG:32734" />
       <Option name="component_height" type="double" value="30" />
       <Option name="component_pos_x" type="double" value="800" />
       <Option name="component_pos_y" type="double" value="50" />
@@ -733,7 +733,7 @@
   <Option name="designerParameterValues" />
   <Option name="groupBoxes" />
   <Option name="help" type="Map">
-    <Option name="ALG_DESC" type="QString" value="Rebuild the named, dissolved and supplement trail datasets from an OSM extract and the park boundary. Clip in WGS84, drop clip-tangent point pieces and promote to MultiLineString, reproject to EPSG:2048, split by highway/name, sort every output by osm_id, dissolve named ways with deterministic aggregates, and write three GeoPackages with their canonical layer names. Deterministic regardless of input feature order." />
+    <Option name="ALG_DESC" type="QString" value="Rebuild the named, dissolved and supplement trail datasets from an OSM extract and the park boundary. Clip in WGS84, drop clip-tangent point pieces and promote to MultiLineString, reproject to EPSG:32734, split by highway/name, sort every output by osm_id, dissolve named ways with deterministic aggregates, and write three GeoPackages with their canonical layer names. Deterministic regardless of input feature order." />
   </Option>
   <Option name="internal_version" type="QString" value="Version2" />
   <Option name="modelVariables" />

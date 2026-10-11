@@ -16,7 +16,7 @@
         <Option name="outputs_collapsed" type="bool" value="false" />
         <Option name="parameters_collapsed" type="bool" value="false" />
       </Option>
-      <Option name="component_description" type="QString" value="Reproject boundary to EPSG:2048" />
+      <Option name="component_description" type="QString" value="Reproject boundary to EPSG:32734" />
       <Option name="component_height" type="double" value="30" />
       <Option name="component_pos_x" type="double" value="0" />
       <Option name="component_pos_y" type="double" value="0" />
@@ -209,7 +209,7 @@
   <Option name="designerParameterValues" />
   <Option name="groupBoxes" />
   <Option name="help" type="Map">
-    <Option name="ALG_DESC" type="QString" value="Extract OSM relation 338191 from the clipped PBF, reproject it to EPSG:2048, and write the park boundary and north-up crop extent." />
+    <Option name="ALG_DESC" type="QString" value="Extract OSM relation 338191 from the clipped PBF, reproject it to EPSG:32734, and write the park boundary and north-up crop extent." />
   </Option>
   <Option name="internal_version" type="QString" value="Version2" />
   <Option name="modelVariables" />

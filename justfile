@@ -35,12 +35,12 @@ prepare-boundary: prepare-osm install-models
       --boundary_geopackage=data/vector/osm/tmnp_relation_338191.gpkg \
       --northup_extent_geopackage=data/vector/osm/tmnp_extent_north_up.gpkg
 
-# Reproject and clip the user-supplied CoCT contour Shapefile to TMNP.
+# Reproject and clip the user-supplied CoCT contour Shapefile to land only.
 prepare-contours: prepare-boundary
     mkdir -p data/vector/coct
     QT_QPA_PLATFORM=offscreen qgis_process run model:contour_prepare \
       --INPUT_CONTOURS=data/vector/coct/ground_level_map_2m_contours/Ground_Level_Map_2m_Contours.shp \
-      --INPUT_BOUNDARY=data/vector/osm/tmnp_relation_338191.gpkg \
+      '--INPUT_BOUNDARY=data/vector/osm/land_coast_only.gpkg|layername=land_coast_only' \
       --prepared_contours_geopackage=data/vector/coct/contours_2m_within_bound.gpkg
 
 # Rebuild the trail GeoPackages from the OSM extract
@@ -135,7 +135,7 @@ build-dem: prepare-contours
     mkdir -p data/elevation
     QT_QPA_PLATFORM=offscreen qgis_process run model:contour_dem \
       '--INPUT_CONTOURS=data/vector/coct/contours_2m_within_bound.gpkg|layername=contours_2m_within_bound' \
-      --INPUT_BOUNDARY=data/vector/osm/tmnp_relation_338191.gpkg \
+      '--INPUT_BOUNDARY=data/vector/osm/land_coast_only.gpkg|layername=land_coast_only' \
       --ELEVATION_FIELD=ELVT \
       --CELL_SIZE=5 \
       --FILL_DISTANCE=11000
